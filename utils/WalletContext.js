@@ -13,7 +13,8 @@ export const WalletProvider = ({ children }) => {
     const [Balance, setBalance] = useState('Loading...');
     const [transactions, setTransactions] = useState([])
     const [tokens, setTokens] = useState([]);
-
+    const BASE_URL = 'http://172.20.10.2';
+    
     useEffect(() => {
         const loadNetwork = async () => {
             const savedNetwork = await AsyncStorage.getItem('selectedNetwork');
@@ -27,7 +28,7 @@ export const WalletProvider = ({ children }) => {
 
     const selectNetwork = async (networkName) => {
         try {
-            const response = await fetch(`http://192.168.1.106/select-network`, {
+            const response = await fetch(`${BASE_URL}/select-network`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ networkName }),
@@ -35,10 +36,8 @@ export const WalletProvider = ({ children }) => {
             const data = await response.json();
             if (!response.ok) throw new Error(data.error);
 
-            // Sadece ağ adını durum değişkenine kaydet
             setSelectedNetwork(networkName);
 
-            // Gerekirse AsyncStorage'a seçilen ağ bilgisini kaydet
             await AsyncStorage.setItem('selectedNetwork', networkName);
             navigation.navigate('Dashboard');
         } catch (error) {
@@ -48,7 +47,7 @@ export const WalletProvider = ({ children }) => {
 
     const createUser = async (username, password) => {
         try {
-            const response = await fetch(`http://192.168.1.106/create-user`, {
+            const response = await fetch(`${BASE_URL}/create-user`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -85,7 +84,7 @@ export const WalletProvider = ({ children }) => {
                 return;
             }
 
-            const response = await fetch(`http://192.168.1.106/create-wallet`, {
+            const response = await fetch(`${BASE_URL}/create-wallet`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -108,7 +107,7 @@ export const WalletProvider = ({ children }) => {
 
     const sendTransaction = async (toAddress, amount) => {
         try {
-            const response = await fetch(`http://192.168.1.106/send-transaction`, {
+            const response = await fetch(`${BASE_URL}/send-transaction`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -120,16 +119,13 @@ export const WalletProvider = ({ children }) => {
                 })
             });
 
-            // Yanıtı metin olarak almak için response.text() kullanın
             const textData = await response.text();
 
             try {
-                // Yanıtı JSON olarak ayrıştırmayı deneyin
                 const data = JSON.parse(textData);
                 if (!response.ok) throw new Error(data.error);
                 Alert.alert('Transaction successful:', data.transactionId);
             } catch (jsonError) {
-                // JSON ayrıştırma başarısız olursa, metin verisini konsola yazdırın
                 console.error('JSON parsing failed', jsonError);
                 console.error('Server response:', textData);
             }
@@ -140,7 +136,7 @@ export const WalletProvider = ({ children }) => {
 
     const listTransactions = async () => {
         try {
-            const response = await fetch(`http://192.168.1.106/list-transactions`, {
+            const response = await fetch(`${BASE_URL}/list-transactions`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -172,7 +168,7 @@ export const WalletProvider = ({ children }) => {
     const addToken = async (tokenAddress, networkName, tokenName, tokenSymbol, tokenDecimal) => {
         try {
             const userToken = await AsyncStorage.getItem('userToken');
-            const response = await fetch(`http://192.168.1.106/add-token`, {
+            const response = await fetch(`${BASE_URL}/add-token`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -201,7 +197,7 @@ export const WalletProvider = ({ children }) => {
     const listTokens = async () => {
         try {
             const userToken = await AsyncStorage.getItem('userToken');
-            const response = await fetch(`http://192.168.1.106/list-token`, {
+            const response = await fetch(`${BASE_URL}/list-token`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ token: userToken })
@@ -216,8 +212,7 @@ export const WalletProvider = ({ children }) => {
             }
         } catch (error) {
             Alert.alert('Error', error.message || 'An error occurred while fetching tokens');
-            // Bu satırı kaldırabilir veya aşağıdaki gibi güncelleyebilirsiniz:
-            setTokens([]); // Bir hata oluştuğunda token listesini boş bir diziye ayarla
+            setTokens([]); 
         }
     };
 
@@ -237,23 +232,23 @@ export const WalletProvider = ({ children }) => {
 
     const getBalance = async (address, networkName) => {
         try {
-            const response = await fetch(`http://192.168.1.106/get-balance`, {
+            const response = await fetch(`${BASE_URL}/get-balance`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ address, networkName })
             });
             const data = await response.json();
             if (!response.ok) throw new Error(data.error);
-            setBalance(data.balance); // Bakiyeyi güncelle
+            setBalance(data.balance); 
         } catch (error) {
             console.error(error);
-            setBalance('Error'); // Hata durumunda bakiyeyi güncelle
+            setBalance('Error'); 
         }
     };
 
     const loginWallet = async (mnemonic, password, username) => {
         try {
-            const response = await fetch(`http://192.168.1.106/login-wallet`, {
+            const response = await fetch(`${BASE_URL}/login-wallet`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -275,16 +270,16 @@ export const WalletProvider = ({ children }) => {
                 await AsyncStorage.setItem('userToken', data.token);
                 setUser({ username, token: data.token, address: data.address });
             }
-            return data; // Başarılı işlem sonucunu döndür
+            return data;
         } catch (error) {
             console.error(error);
-            throw error; // Hata durumunda hatayı fırlat
+            throw error; 
         }
     };
 
     const importWallet = async (username, password, mnemonic) => {
         try {
-            const response = await fetch('http://192.168.1.106/import-wallet', {
+            const response = await fetch(`${BASE_URL}/import-wallet`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -293,10 +288,8 @@ export const WalletProvider = ({ children }) => {
             });
             const data = await response.json();
             if (data.success) {
-                // İşlemler başarılı
                 console.log('Cüzdan başarıyla içe aktarıldı:', data);
             } else {
-                // Hata işleme
                 console.error('Cüzdan içe aktarılırken bir hata oluştu');
             }
         } catch (error) {
@@ -306,7 +299,7 @@ export const WalletProvider = ({ children }) => {
 
     const getTransactionFee = async (networkName) => {
         try {
-            const response = await fetch(`http://192.168.1.106/get-transaction-fee`, {
+            const response = await fetch(`${BASE_URL}/get-transaction-fee`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -330,7 +323,7 @@ export const WalletProvider = ({ children }) => {
 
     const getTokenBalance = async (networkName, tokenAddress, walletAddress) => {
         try {
-            const response = await fetch('http://192.168.1.106/get-token-balance', {
+            const response = await fetch(`${BASE_URL}/get-token-balance`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -355,7 +348,7 @@ export const WalletProvider = ({ children }) => {
 
     const sendERC20Token = async (toAddress, amount, tokenAddress) => {
         try {
-            const response = await fetch(`http://192.168.1.106/send-token`, {
+            const response = await fetch(`${BASE_URL}/send-token`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
