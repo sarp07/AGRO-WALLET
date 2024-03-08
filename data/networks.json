@@ -1,0 +1,60 @@
+{
+    "mainnets": {
+        "Ethereum": {
+            "chainId": "0x1",
+            "rpcUrl": "https://mainnet.infura.io/v3/YOUR_INFURA_PROJECT_ID",
+            "nativeCurrency": {
+                "name": "Ether",
+                "symbol": "ETH",
+                "decimals": 18
+            }
+        },
+        "Binance Smart Chain": {
+            "chainId": "0x38",
+            "rpcUrl": "https://bsc-dataseed.binance.org/",
+            "nativeCurrency": {
+                "name": "Binance Coin",
+                "symbol": "BNB",
+                "decimals": 18
+            }
+        },
+        "Polygon": {
+            "chainId": "0x89",
+            "rpcUrl": "https://polygon-rpc.com/",
+            "nativeCurrency": {
+                "name": "Matic",
+                "symbol": "MATIC",
+                "decimals": 18
+            }
+        }
+    },
+    "testnets": {
+        "Goerli": {
+            "chainId": "0x5",
+            "rpcUrl": "https://goerli.infura.io/v3/YOUR_INFURA_PROJECT_ID",
+            "nativeCurrency": {
+                "name": "Goerli Ether",
+                "symbol": "gETH",
+                "decimals": 18
+            }
+        },
+        "BSC Testnet": {
+            "chainId": "0x61",
+            "rpcUrl": "https://data-seed-prebsc-1-s1.binance.org:8545/",
+            "nativeCurrency": {
+                "name": "Binance Coin",
+                "symbol": "tBNB",
+                "decimals": 18
+            }
+        },
+        "Mumbai": {
+            "chainId": "0x13881",
+            "rpcUrl": "https://matic-mumbai.chainstacklabs.com",
+            "nativeCurrency": {
+                "name": "Mumbai Matic",
+                "symbol": "mMATIC",
+                "decimals": 18
+            }
+        }
+    }
+}
