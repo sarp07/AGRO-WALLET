@@ -19,7 +19,7 @@ const LoginWalletScreen = () => {
         try {
             const data = await loginWallet(mnemonic, password, username);
             Alert.alert('Success', `Wallet loged successfully! Address: ${data.address}`);
-            navigation.navigate('Dashboard');
+            //navigation.navigate('Dashboard');
         } catch (error) {
             Alert.alert('Login Failed', error.toString());
         }

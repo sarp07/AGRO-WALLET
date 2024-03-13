@@ -13,8 +13,8 @@ export const WalletProvider = ({ children }) => {
     const [Balance, setBalance] = useState('Loading...');
     const [transactions, setTransactions] = useState([])
     const [tokens, setTokens] = useState([]);
-    const BASE_URL = 'http://172.20.10.2';
-    
+    const [isEnabled2FA, setIsEnabled2FA] = useState(false);
+    const BASE_URL = 'http://192.168.1.104';
     useEffect(() => {
         const loadNetwork = async () => {
             const savedNetwork = await AsyncStorage.getItem('selectedNetwork');
@@ -45,6 +45,36 @@ export const WalletProvider = ({ children }) => {
         }
     };
 
+    useEffect(() => {
+        const check2FAStatus = async () => {
+            const userToken = await AsyncStorage.getItem('userToken');
+            if (userToken) {
+                try {
+                    const response = await fetch(`${BASE_URL}/check-2fa`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ token: userToken }),
+                    });
+    
+                    const data = await response.json();
+                    console.log("Check 2FA Response Data:", data);
+    
+                    if (response.ok) {
+                        setIsEnabled2FA(data.twoFactorEnabled);
+                        await AsyncStorage.setItem('isEnabled2FA', JSON.stringify(data.twoFactorEnabled));
+                    } else {
+                        throw new Error(data.message || '2FA status could not be retrieved');
+                    }
+                } catch (error) {
+                    console.error("Error during 2FA check:", error);
+                    Alert.alert('Error', 'Failed to check 2FA status');
+                }
+            }
+        };
+    
+        check2FAStatus();
+    }, []);    
+    
     const createUser = async (username, password) => {
         try {
             const response = await fetch(`${BASE_URL}/create-user`, {
@@ -183,7 +213,6 @@ export const WalletProvider = ({ children }) => {
 
             const data = await response.json();
             if (data.success) {
-                //Alert.alert('Success', data.message);
                 listTokens();
             } else {
                 throw new Error(data.error || 'Failed to add token');
@@ -255,28 +284,28 @@ export const WalletProvider = ({ children }) => {
                 },
                 body: JSON.stringify({ username, password, mnemonic }),
             });
-
+    
             if (!response.ok) {
                 const errorText = await response.text();
                 throw new Error(errorText);
             }
-
+    
             const data = await response.json();
-
             await AsyncStorage.setItem('walletData', JSON.stringify(data));
             setWallet(data);
-
+    
             if (data.token) {
                 await AsyncStorage.setItem('userToken', data.token);
                 setUser({ username, token: data.token, address: data.address });
+    
+            navigation.navigate(isEnabled2FA ? 'Verify2FA' : 'Dashboard');
             }
-            return data;
         } catch (error) {
             console.error(error);
-            throw error; 
+            Alert.alert('Login Error', error.toString());
         }
     };
-
+    
     const importWallet = async (username, password, mnemonic) => {
         try {
             const response = await fetch(`${BASE_URL}/import-wallet`, {
@@ -370,6 +399,64 @@ export const WalletProvider = ({ children }) => {
         }
     };
 
+    const enable2FA = async () => {
+        const token = await AsyncStorage.getItem('userToken');
+        console.log("2FA Etkinleştiriliyor...");
+        try {
+            const response = await fetch(`${BASE_URL}/enable-2fa`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ token }),
+            });
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.error);
+            console.log("2FA Başarıyla Etkinleştirildi! ");
+            setIsEnabled2FA(true);
+            await AsyncStorage.setItem('isEnabled2FA', 'true');
+            return data;
+        } catch (error) {
+            console.error("2FA Etkinleştirme Hatası: ", error);
+        }
+    };
+    
+    const verify2FA = async (twoFactorToken) => {
+        const token = await AsyncStorage.getItem('userToken');
+        console.log("2FA Doğrulanıyor...");
+        try {
+            const response = await fetch(`${BASE_URL}/verify-2fa`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ token, twoFactorToken }),
+            });
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.error);
+            console.log("2FA Başarıyla Doğrulandı: ", data);
+            return data;
+        } catch (error) {
+            console.error("2FA Doğrulama Hatası: ", error);
+        }
+    };
+    
+    const disable2FA = async () => {
+        const token = await AsyncStorage.getItem('userToken');
+        console.log("2FA Devre Dışı Bırakılıyor...");
+        try {
+            const response = await fetch(`${BASE_URL}/disable-2fa`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ token }),
+            });
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.error);
+            console.log("2FA Başarıyla Devre Dışı Bırakıldı: ", data);
+            setIsEnabled2FA(false); 
+            await AsyncStorage.setItem('isEnabled2FA', 'false');
+            return data;
+        } catch (error) {
+            console.error("2FA Devre Dışı Bırakma Hatası: ", error);
+        }
+    };      
+
     const logout = async () => {
         try {
             await AsyncStorage.clear();
@@ -400,7 +487,12 @@ export const WalletProvider = ({ children }) => {
             listTokens,
             tokens,
             getTokenBalance,
-            sendERC20Token
+            sendERC20Token,
+            enable2FA,
+            disable2FA,
+            verify2FA,
+            isEnabled2FA,
+            setIsEnabled2FA
         }}>
             {children}
         </WalletContext.Provider>
