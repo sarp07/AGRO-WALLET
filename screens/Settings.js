@@ -61,9 +61,16 @@ const Accordion = ({ title, children }) => {
 };
 
 const SettingsScreen = () => {
-  const { enable2FA, verify2FA, disable2FA, isEnabled2FA, setIsEnabled2FA } =
-    useContext(WalletContext);
+  const {
+    enable2FA,
+    verify2FA,
+    deploy2FA,
+    disable2FA,
+    isEnabled2FA,
+    setIsEnabled2FA,
+  } = useContext(WalletContext);
   const [show2FAModal, setShow2FAModal] = useState(false);
+  const [shows2FAModal, setShows2FAModal] = useState(false);
   const [twoFactorToken, setTwoFactorToken] = useState("");
   const [qrCodeUrl, setQrCodeUrl] = useState("");
   const [secretCode, setSecretCode] = useState("");
@@ -80,19 +87,23 @@ const SettingsScreen = () => {
       setQrCodeUrl(qrCodeImageUrl);
       setSecretCode(secret);
     } else {
-      disable2FA().then(() => {
-        setIsEnabled2FA(false);
-        AsyncStorage.setItem("is2FAEnabled", "false");
-        Alert.alert(
-          "2FA Disabled",
-          "Two-factor authentication has been disabled."
-        );
-      });
+      setShows2FAModal(true);
     }
   };
 
-  const verify2FACode = async () => {
+  const disable2FA_Auth = async () => {
     const data = await verify2FA(twoFactorToken);
+    if (data.success) {
+      Alert.alert("Success", "2FA is disabled succesfully!")
+      await disable2FA();
+      setShows2FAModal(false);
+    } else {
+      Alert.alert("Error", "Failed to verfiy 2FA code.")
+    }
+  }
+
+  const verify2FACode = async () => {
+    const data = await deploy2FA(twoFactorToken);
     if (data.success) {
       Alert.alert("Success", "2FA is verified successfully!");
       setShow2FAModal(false);
@@ -129,6 +140,12 @@ const SettingsScreen = () => {
       >
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
+            <TouchableOpacity
+              style={styles.closeButton}
+              onPress={() => setShow2FAModal(false)}
+            >
+              <Ionicons name="close-circle" size={24} color="black" />
+            </TouchableOpacity>
             <Text style={styles.modalText}>
               Scan this QR code with your 2FA app
             </Text>
@@ -153,6 +170,39 @@ const SettingsScreen = () => {
             <TouchableOpacity
               style={[styles.button, styles.buttonClose]}
               onPress={verify2FACode}
+            >
+              <Text style={styles.textStyle}>Verify</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={shows2FAModal}
+        onRequestClose={() => setShows2FAModal(false)}
+      >
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <TouchableOpacity
+              style={styles.closeButton}
+              onPress={() => setShows2FAModal(false)}
+            >
+              <Ionicons name="close-circle" size={24} color="black" />
+            </TouchableOpacity>
+            <Text style={styles.modalText}>
+              Verify 2FA for disable 2FA protection.
+            </Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Enter your 2FA code"
+              value={twoFactorToken}
+              onChangeText={setTwoFactorToken}
+              keyboardType="numeric"
+            />
+            <TouchableOpacity
+              style={[styles.button, styles.buttonClose]}
+              onPress={disable2FA_Auth}
             >
               <Text style={styles.textStyle}>Verify</Text>
             </TouchableOpacity>
@@ -268,6 +318,11 @@ const styles = StyleSheet.create({
     color: "white",
     fontWeight: "bold",
     textAlign: "center",
+  },
+  closeButton: {
+    position: "absolute",
+    top: 5,
+    left: 5,
   },
 });
 
