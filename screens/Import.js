@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Image, StyleSheet, Alert, KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, Image, StyleSheet, Alert, KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Keyboard, ImageBackground } from 'react-native';
 import { WalletContext } from '../utils/WalletContext';
 
 const ImportWalletScreen = () => {
@@ -24,8 +24,12 @@ const ImportWalletScreen = () => {
             keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
         >
             <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <ImageBackground
+          source={require("../assets/bg.jpg")}
+          style={styles.backgroud}
+        >
                 <View style={styles.innerContainer}>
-                    <Image source={require('../assets/agro_logo.png')} style={styles.logo} />
+                    <Image source={require('../assets/agro_whiteLogo.png')} style={styles.logo} />
                     <Text style={styles.title}>Import Your Wallet</Text>
                     <TextInput style={styles.input} value={username} onChangeText={setUsername} placeholder="Set Username" />
                     <TextInput style={styles.input} value={password} onChangeText={setPassword} placeholder="Set Password" secureTextEntry />
@@ -35,15 +39,20 @@ const ImportWalletScreen = () => {
                         <Text style={styles.buttonText}>Import Wallet</Text>
                     </TouchableOpacity>
                 </View>
+                </ImageBackground>
             </TouchableWithoutFeedback>
         </KeyboardAvoidingView>
     );
 };
 
 const styles = StyleSheet.create({
+    backgroud: {
+      flex: 1,
+      resizeMode: 'cover',
+      justifyContent: 'center',
+    },
     container: {
         flex: 1,
-        backgroundColor: '#ECFFDC'
     },
     innerContainer: {
         flex: 1,
@@ -55,6 +64,7 @@ const styles = StyleSheet.create({
         fontSize: 22,
         fontWeight: 'bold',
         marginBottom: 20,
+        color: '#fff'
     },
     input: {
         width: '100%',

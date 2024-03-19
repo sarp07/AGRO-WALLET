@@ -9,6 +9,7 @@ import {
   Modal,
   TextInput,
   Button,
+  ImageBackground,
 } from "react-native";
 import { WalletContext } from "../utils/WalletContext";
 import { Ionicons } from "@expo/vector-icons";
@@ -73,126 +74,181 @@ const NetworkSelectionScreen = () => {
   };
 
   return (
-    <ScrollView style={styles.container}>
-      <Text style={styles.header}>Select Network</Text>
-      <View>
-        <Text style={styles.subHeader}>Mainnet</Text>
-        {networks.mainnet.map((network) => (
-          <TouchableOpacity
-            key={network}
-            style={styles.networkButton}
-            onPress={() => selectNetwork(network)}
-          >
-            <Text style={styles.networkName}>{network}</Text>
-          </TouchableOpacity>
-        ))}
-      </View>
-      <View>
-        <Text style={styles.subHeader}>Testnet</Text>
-        {networks.testnet.map((network) => (
-          <TouchableOpacity
-            key={network}
-            style={styles.networkButton}
-            onPress={() => selectNetwork(network)}
-          >
-            <Text style={styles.networkName}>{network}</Text>
-          </TouchableOpacity>
-        ))}
-      </View>
-      <View>
-        <Text style={styles.subHeader}>Custom Networks</Text>
-        {customNetworks.map((network, index) => (
-          <TouchableOpacity
-            key={index}
-            style={styles.networkButton}
-            onPress={() => selectNetwork(network)}
-          >
-            <Text style={styles.networkName}>{network.name}</Text>
-          </TouchableOpacity>
-        ))}
-        <TouchableOpacity
-          style={styles.addButton}
-          onPress={() => setIsModalVisible(true)}
-        >
-          <Text style={styles.addButtonText}>Add Custom Network</Text>
-        </TouchableOpacity>
-        <br />
-      </View>
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={isModalVisible}
-        onRequestClose={() => {
-          setIsModalVisible(!isModalVisible);
-        }}
-      >
-        <BlurView intensity={100} style={styles.blurView}>
-          <View style={styles.centeredView}>
-            <View style={styles.modalView}>
-              <TouchableOpacity
-                style={styles.closeButton}
-                onPress={() => setIsModalVisible(false)}
+    <ImageBackground
+      source={require("../assets/bg.jpg")}
+      style={styles.container}
+    >
+      <ScrollView style={styles.glassmorphicContainer}>
+        <Text style={styles.header}>Select Network</Text>
+        <View>
+          <Text style={styles.subHeader}>Mainnet</Text>
+          {networks.mainnet.map((network) => (
+            <TouchableOpacity
+              key={network}
+              onPress={() => selectNetwork(network)}
+            >
+              <BlurView
+                style={styles.networkButton}
+                tint="light"
+                intensity="20"
               >
-                <Ionicons name="close-circle" size={24} color="black" />
-              </TouchableOpacity>
-              <TextInput
-                placeholder="Network Name"
-                onChangeText={setNetworkName}
-                value={networkName}
-              />
-              <TextInput
-                placeholder="Currency Name"
-                onChangeText={setCurrencyName}
-                value={currencyName}
-              />
-              <TextInput
-                placeholder="Symbol"
-                onChangeText={setSymbol}
-                value={symbol}
-              />
-              <TextInput
-                placeholder="RPC URL"
-                onChangeText={setRpcUrl}
-                value={rpcUrl}
-              />
-              <TextInput
-                placeholder="Chain ID"
-                onChangeText={setChainId}
-                value={chainId}
-              />
-              <TextInput
-                placeholder="Decimals"
-                onChangeText={setDecimals}
-                value={decimals}
-              />
-              <Button title="Add Network" onPress={handleAddCustomNetwork} />
+                <Text style={styles.networkName}>{network}</Text>
+              </BlurView>
+            </TouchableOpacity>
+          ))}
+        </View>
+        <View>
+          <Text style={styles.subHeader}>Testnet</Text>
+          {networks.testnet.map((network) => (
+            <TouchableOpacity
+              key={network}
+              onPress={() => selectNetwork(network)}
+            >
+              <BlurView
+                style={styles.networkButton}
+                tint="light"
+                intensity="20"
+              >
+                <Text style={styles.networkName}>{network}</Text>
+              </BlurView>
+            </TouchableOpacity>
+          ))}
+        </View>
+        <View>
+          <Text style={styles.subHeader}>Custom Networks</Text>
+          {customNetworks.map((network, index) => (
+            <TouchableOpacity
+              key={index}
+              onPress={() => selectNetwork(network)}
+            >
+              <BlurView
+                style={styles.networkButton}
+                tint="light"
+                intensity="20"
+              >
+                <Text style={styles.networkName}>{network.name}</Text>
+              </BlurView>
+            </TouchableOpacity>
+          ))}
+          <TouchableOpacity
+            onPress={() => setIsModalVisible(true)}
+            style={styles.networkButton2}
+          >
+            <Text style={styles.networkName}>Add Custom Network</Text>
+          </TouchableOpacity>
+        </View>
+            <View style={{
+              flex: 1,
+              margin: 25,
+            }}>
             </View>
-          </View>
-        </BlurView>
-      </Modal>
-    </ScrollView>
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={isModalVisible}
+          onRequestClose={() => {
+            setIsModalVisible(!isModalVisible);
+          }}
+        >
+          <BlurView intensity={20} tint="dark" style={styles.blurView}>
+            <View style={styles.centeredView}>
+              <View>
+                <BlurView intensity={20} tint="light" style={styles.modalView}>
+                  <TouchableOpacity
+                    style={styles.closeButton}
+                    onPress={() => setIsModalVisible(false)}
+                  >
+                    <Ionicons name="close-circle" size={24} color="white" />
+                  </TouchableOpacity>
+                  <TextInput
+                    placeholder="Network Name"
+                    onChangeText={setNetworkName}
+                    value={networkName}
+                    style={styles.input}
+                  />
+                  <TextInput
+                    placeholder="Currency Name"
+                    onChangeText={setCurrencyName}
+                    value={currencyName}
+                    style={styles.input}
+                  />
+                  <TextInput
+                    placeholder="Symbol"
+                    onChangeText={setSymbol}
+                    value={symbol}
+                    style={styles.input}
+                  />
+                  <TextInput
+                    placeholder="RPC URL"
+                    onChangeText={setRpcUrl}
+                    value={rpcUrl}
+                    style={styles.input}
+                  />
+                  <TextInput
+                    placeholder="Chain ID"
+                    onChangeText={setChainId}
+                    value={chainId}
+                    style={styles.input}
+                  />
+                  <TextInput
+                    placeholder="Decimals"
+                    onChangeText={setDecimals}
+                    value={decimals}
+                    style={styles.input}
+                  />
+                  <TouchableOpacity
+                    title="Add Network"
+                    onPress={handleAddCustomNetwork}
+                  >
+                    <Text style={styles.addButtons}>Add Network</Text>
+                  </TouchableOpacity>
+                </BlurView>
+              </View>
+            </View>
+          </BlurView>
+        </Modal>
+      </ScrollView>
+    </ImageBackground>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#ECFFDC",
+    resizeMode: "cover",
+    justifyContent: "center",
+  },
+  glassmorphicContainer: {
+    padding: 0,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 4.65,
+    elevation: 8,
   },
   header: {
     fontSize: 22,
     fontWeight: "bold",
-    color: "green",
+    color: "#fff",
     padding: 20,
   },
   subHeader: {
     fontSize: 18,
-    color: "gray",
+    color: "#fff",
     paddingLeft: 20,
     paddingTop: 10,
   },
   networkButton: {
-    backgroundColor: "lightgreen",
+    padding: 15,
+    marginHorizontal: 20,
+    marginTop: 10,
+    alignItems: "center",
+  },
+  networkButton2: {
+    backgroundColor: "green",
     padding: 15,
     marginHorizontal: 20,
     marginTop: 10,
@@ -203,72 +259,71 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 16,
   },
-  backdrop: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: "rgba(0,255,0,0.5)",
-  },
-  centeredView: {
+  blurView: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: 'rgba(100, 100, 100, 0.5)', // Bu arkaplan rengi biraz koyu bir blur efekti sağlar
+  },
+  centeredView: {
+    justifyContent: "center",
+    alignItems: "center",
   },
   modalView: {
     margin: 20,
-    backgroundColor: "white",
     borderRadius: 20,
     padding: 35,
     alignItems: "center",
+    width: 300,
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
-      height: 2
+      height: 2,
     },
     shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5
+    shadowRadius: 4,
+    elevation: 5,
   },
   closeButton: {
-    position: 'absolute',
-    top: 15,
-    right: 15,
+    alignSelf: "flex-end",
+    position: "absolute",
+    top: 10,
+    color: '#fff',
+    right: 10,
   },
-  textInput: {
-    height: 40,
-    borderColor: 'gray',
-    borderWidth: 1,
-    borderRadius: 5,
-    marginBottom: 15,
+  input: {
+    width: "100%",
+    margin: 13,
+    borderWidth: 2,
     padding: 10,
-    width: 250,
+    borderRadius: 10,
+    borderColor: "#fff",
+    color: "#fff",
   },
-  addButton: {
-    backgroundColor: '#2196F3',
+  button: {
     borderRadius: 20,
     padding: 10,
     elevation: 2,
-    marginTop: 15,
+    backgroundColor: "#3cb371",
   },
-  addButtonText: {
+  buttonText: {
     color: "white",
     fontWeight: "bold",
-    textAlign: "center"
+    textAlign: "center",
   },
-  closeButton: {
-    position: "absolute",
-    top: 5,
-    left: 5,
+  closeIcon: {
+    color: "#fff",
   },
-  blurView: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    bottom: 0,
-    right: 0,
+  textStyle: {
+    color: "white",
+    fontWeight: "bold",
+    textAlign: "center",
+  },
+  addButtons: {
+    marginTop: 20,
+    marginBottom: 20,
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: '20'
   },
 });
 

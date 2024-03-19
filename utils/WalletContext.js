@@ -14,7 +14,7 @@ export const WalletProvider = ({ children }) => {
   const [transactions, setTransactions] = useState([]);
   const [tokens, setTokens] = useState([]);
   const [isEnabled2FA, setIsEnabled2FA] = useState(false);
-  const BASE_URL = "http://192.168.1.101";
+  const BASE_URL = "http://172.20.10.4";
   useEffect(() => {
     const loadNetwork = async () => {
       const savedNetwork = await AsyncStorage.getItem("selectedNetwork");

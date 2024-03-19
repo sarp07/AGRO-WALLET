@@ -51,7 +51,7 @@ const SendTransactionScreen = () => {
   };
 
   const completeTransaction = async () => {
-    setIsLoading(true); // Yükleme başladı
+    setIsLoading(true);
     try {
       const success = await sendTransaction(toAddress, amount);
       if (success) {
@@ -62,12 +62,12 @@ const SendTransactionScreen = () => {
     } catch (error) {
       Alert.alert("Error", "Failed to send transaction", [{ text: "OK" }]);
     }
-    setIsLoading(false); // Yükleme bitti
-    setIs2FAModalVisible(false); // Modalı kapat
+    setIsLoading(false);
+    setIs2FAModalVisible(false);
   };
 
   const verifyAndSend = async () => {
-    setIsLoading(true); // Yükleme başladı
+    setIsLoading(true); 
     const success = await verify2FA(twoFACode);
     if (success) {
       await completeTransaction();
