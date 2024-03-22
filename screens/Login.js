@@ -61,22 +61,24 @@ const LoginWalletScreen = () => {
                 style={styles.logo}
               />
               <Text style={styles.title}>Login Your Wallet</Text>
-              <Text style={styles.subTitle}>Username</Text>
               <TextInput
                 style={styles.input}
                 value={username}
                 onChangeText={setUsername}
+                placeholder="Username"
+                placeholderTextColor="#fff"
               />
-              <Text style={styles.subTitle}>Password</Text>
               <TextInput
                 style={styles.input}
                 value={password}
                 onChangeText={setPassword}
                 secureTextEntry
+                placeholder="Password"
+                placeholderTextColor="#fff"
               />
               <BlurView
                 intensity={20}
-                tint="light"
+                tint="dark"
                 style={styles.warningContainer}
               >
                 <MaterialCommunityIcons
@@ -88,12 +90,13 @@ const LoginWalletScreen = () => {
                   Important: Please write down these words in the right order.
                 </Text>
               </BlurView>
-              <Text style={styles.subTitle}>Mnemonic</Text>
               <TextInput
                 style={styles.input}
                 value={mnemonic}
                 onChangeText={setMnemonic}
                 secureTextEntry
+                placeholder="Mnemonic"
+                placeholderTextColor="#fff"
               />
               <TouchableOpacity
                 style={styles.button}

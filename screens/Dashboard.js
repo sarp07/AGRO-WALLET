@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
   ScrollView,
   ImageBackground,
+  RefreshControl,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { WalletContext } from "../utils/WalletContext";
@@ -58,6 +59,28 @@ const DashboardScreen = () => {
   const [selectedSection, setSelectedSection] = useState("Tokens");
   const [isOpen, setIsOpen] = useState(false);
   const toggleMenu = () => setIsOpen(!isOpen);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    
+    Promise.all([
+      listTransactions(),
+      Balance(),
+    ])
+    .then(() => {
+      console.log('Data refreshed');
+    })
+    .catch((error) => {
+      console.error("An error occurred during the refresh:", error);
+      Alert.alert("Refresh Error", "An error occurred during the refresh.");
+    })
+    .finally(() => {
+      setRefreshing(false);
+    });
+  
+  }, [Balance, listTransactions, ]);
+  
 
   const handleMenuItemSelected = (selectedItem) => {
     setIsOpen(false); // Menüyü kapat
@@ -118,7 +141,7 @@ const DashboardScreen = () => {
     address ? `${address.slice(0, 4)}...${address.slice(-3)}` : "...";
 
   const ActivitySection = () => (
-    <BlurView tint="light" intensity="20" style={styles.section}>
+    <BlurView tint="dark" intensity="20" style={styles.section}>
       <View style={styles.tableHeader}>
         <Text style={styles.tableHeaderText}>From</Text>
         <Text style={styles.tableHeaderText}>To</Text>
@@ -148,8 +171,8 @@ const DashboardScreen = () => {
                 <Text style={styles.tableCell}>{formattedAmount}</Text>
                 <Text style={styles.tableCell}>{shortenAddress(tx.hash)}</Text>
                 <TouchableOpacity onPress={copyTX}>
-                <Ionicons name="copy-outline" size={12} color="white" />
-              </TouchableOpacity>
+                  <Ionicons name="copy-outline" size={12} color="white" />
+                </TouchableOpacity>
               </View>
             );
           }
@@ -166,7 +189,7 @@ const DashboardScreen = () => {
       navigation.navigate("AddNFT");
     };
     return (
-      <BlurView tint="light" intensity="20" style={styles.section}>
+      <BlurView tint="dark" intensity="20" style={styles.section}>
         {tokens && tokens.length > 0 ? (
           tokens.map((token, index) => {
             if (token.network === selectedNetwork) {
@@ -245,7 +268,7 @@ const DashboardScreen = () => {
     }
 
     return (
-      <BlurView tint="light" intensity="20"  style={styles.section}>
+      <BlurView tint="dark" intensity="20" style={styles.section}>
         {tokenData.length > 0 ? (
           tokenData.map((token, index) => (
             <View key={index} style={styles.tokenItem}>
@@ -296,10 +319,15 @@ const DashboardScreen = () => {
       menuPosition="right"
     >
       <ImageBackground
-        source={require ('../assets/bg.jpg')}
+        source={require("../assets/bg.jpg")}
         style={styles.container}
       >
-        <ScrollView style={styles.glassmorphicContainer}>
+        <ScrollView
+          style={styles.glassmorphicContainer}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
+        >
           <View style={styles.navbar}>
             <Image
               source={require("../assets/agro_whiteLogo.png")}
@@ -311,7 +339,7 @@ const DashboardScreen = () => {
             </TouchableOpacity>
           </View>
 
-          <BlurView tint="light" intensity="20" style={styles.card}>
+          <BlurView tint="dark" intensity="20" style={styles.card}>
             <Text style={styles.cardTitle}>Wallet Address</Text>
             <View style={styles.addressContainer}>
               <Text style={styles.address}>
@@ -326,8 +354,8 @@ const DashboardScreen = () => {
               <Text style={styles.networkText}>{selectedNetwork}</Text>
             </View>
           </BlurView>
-          
-          <BlurView tint="light" intensity="20" style={styles.card}>
+
+          <BlurView tint="dark" intensity="20" style={styles.card}>
             <View style={styles.addressContainer2}>
               <View>
                 <Text style={styles.cardTitle}>Balance</Text>
@@ -364,12 +392,12 @@ const DashboardScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    resizeMode: 'cover',
-    justifyContent: 'center',
+    resizeMode: "cover",
+    justifyContent: "center",
   },
   glassmorphicContainer: {
     padding: 0,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: {
       width: 0,
       height: 4,
@@ -508,7 +536,7 @@ const styles = StyleSheet.create({
   },
   tableCell: {
     flex: 1,
-    color: "#fff"
+    color: "#fff",
   },
   tokenItem: {
     flexDirection: "row",
@@ -571,14 +599,14 @@ const styles = StyleSheet.create({
   },
   networkText: {
     fontSize: 18,
-    color: "gray", 
+    color: "gray",
   },
   transactionText: {
     flex: 1,
-    justifyContent: 'center',
-    alignContent: 'center',
-    color: '#fff'
-  }
+    justifyContent: "center",
+    alignContent: "center",
+    color: "#fff",
+  },
 });
 
 export default DashboardScreen;

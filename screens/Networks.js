@@ -12,8 +12,9 @@ import {
   ImageBackground,
 } from "react-native";
 import { WalletContext } from "../utils/WalletContext";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons, AntDesign } from "@expo/vector-icons";
 import { BlurView } from "expo-blur";
+import { useNavigation } from "@react-navigation/native";
 
 const networks = {
   mainnet: [
@@ -51,6 +52,7 @@ const NetworkSelectionScreen = () => {
   const [rpcUrl, setRpcUrl] = useState("");
   const [chainId, setChainId] = useState("");
   const [decimals, setDecimals] = useState("");
+  const navigation = useNavigation();
 
   useEffect(() => {
     const fetchCustomNetworks = async () => {
@@ -79,7 +81,13 @@ const NetworkSelectionScreen = () => {
       style={styles.container}
     >
       <ScrollView style={styles.glassmorphicContainer}>
+        <TouchableOpacity
+          style={styles.headerBox}
+          onPress={() => navigation.goBack()}
+        >
+          <AntDesign name="leftcircle" size={22} color="white" />
         <Text style={styles.header}>Select Network</Text>
+        </TouchableOpacity>
         <View>
           <Text style={styles.subHeader}>Mainnet</Text>
           {networks.mainnet.map((network) => (
@@ -89,7 +97,7 @@ const NetworkSelectionScreen = () => {
             >
               <BlurView
                 style={styles.networkButton}
-                tint="light"
+                tint="dark"
                 intensity="20"
               >
                 <Text style={styles.networkName}>{network}</Text>
@@ -106,7 +114,7 @@ const NetworkSelectionScreen = () => {
             >
               <BlurView
                 style={styles.networkButton}
-                tint="light"
+                tint="dark"
                 intensity="20"
               >
                 <Text style={styles.networkName}>{network}</Text>
@@ -123,7 +131,7 @@ const NetworkSelectionScreen = () => {
             >
               <BlurView
                 style={styles.networkButton}
-                tint="light"
+                tint="dark"
                 intensity="20"
               >
                 <Text style={styles.networkName}>{network.name}</Text>
@@ -137,11 +145,12 @@ const NetworkSelectionScreen = () => {
             <Text style={styles.networkName}>Add Custom Network</Text>
           </TouchableOpacity>
         </View>
-            <View style={{
-              flex: 1,
-              margin: 25,
-            }}>
-            </View>
+        <View
+          style={{
+            flex: 1,
+            margin: 25,
+          }}
+        ></View>
         <Modal
           animationType="slide"
           transparent={true}
@@ -153,7 +162,7 @@ const NetworkSelectionScreen = () => {
           <BlurView intensity={20} tint="dark" style={styles.blurView}>
             <View style={styles.centeredView}>
               <View>
-                <BlurView intensity={20} tint="light" style={styles.modalView}>
+                <BlurView intensity={20} tint="dark" style={styles.modalView}>
                   <TouchableOpacity
                     style={styles.closeButton}
                     onPress={() => setIsModalVisible(false)}
@@ -229,11 +238,17 @@ const styles = StyleSheet.create({
     shadowRadius: 4.65,
     elevation: 8,
   },
+  headerBox: {
+    flex: 1,
+    flexDirection: "row",
+    alignContent: "center",
+    padding: 15,
+    gap: 15,
+  },
   header: {
     fontSize: 22,
     fontWeight: "bold",
     color: "#fff",
-    padding: 20,
   },
   subHeader: {
     fontSize: 18,
@@ -287,8 +302,8 @@ const styles = StyleSheet.create({
     alignSelf: "flex-end",
     position: "absolute",
     top: 10,
-    color: '#fff',
-    right: 10,
+    color: "#fff",
+    left: 10,
   },
   input: {
     width: "100%",
@@ -321,9 +336,9 @@ const styles = StyleSheet.create({
   addButtons: {
     marginTop: 20,
     marginBottom: 20,
-    color: '#fff',
-    fontWeight: 'bold',
-    fontSize: '20'
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: "20",
   },
 });
 

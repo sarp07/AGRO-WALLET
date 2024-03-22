@@ -14,10 +14,12 @@ import {
   Modal,
   SafeAreaView,
   ActivityIndicator,
+  ImageBackground,
 } from "react-native";
 import { WalletContext } from "../utils/WalletContext";
-import { LinearGradient } from "expo-linear-gradient";
+import { BlurView } from "expo-blur";
 import { useNavigation } from "@react-navigation/native";
+import { AntDesign, Ionicons } from "@expo/vector-icons";
 
 const SendTransactionScreen = () => {
   const {
@@ -67,7 +69,7 @@ const SendTransactionScreen = () => {
   };
 
   const verifyAndSend = async () => {
-    setIsLoading(true); 
+    setIsLoading(true);
     const success = await verify2FA(twoFACode);
     if (success) {
       await completeTransaction();
@@ -79,11 +81,20 @@ const SendTransactionScreen = () => {
   };
 
   const fetchFeeData = async () => {
+    setIsLoading(true);
     try {
-      const data = await getTransactionFee(selectedNetwork);
+      let data;
+      // Seçilen ağ BSC-Testnet ise gaz bedelini 3 gwei olarak ayarla
+      if (selectedNetwork === 'BSC-Testnet') {
+        data = { gasPrice: '0.00009' };
+      } else {
+        data = await getTransactionFee();
+      }
       setFeeData(data);
     } catch (error) {
       console.error("Error fetching fee data:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -94,16 +105,13 @@ const SendTransactionScreen = () => {
   }, [selectedNetwork]);
 
   const handleMaxAmount = () => {
-    if (!feeData || !Balance) {
-      Alert.alert(
-        "Error",
-        "Fee data or balance is not available. Please try again."
-      );
+    if (isLoading || !feeData || !Balance) {
+      Alert.alert("Error", "Please wait for the data to load or try again.");
       return;
     }
 
-    const balanceInEth = Balance;
-    const gasPriceInEth = feeData.gasPrice;
+    const balanceInEth = parseFloat(Balance);
+    const gasPriceInEth = parseFloat(feeData.gasPrice);
 
     const maxAmountToSend = balanceInEth - gasPriceInEth;
 
@@ -121,56 +129,75 @@ const SendTransactionScreen = () => {
   };
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
+    <ImageBackground
       style={styles.container}
+      source={require("../assets/bg.jpg")}
     >
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <View style={styles.container}>
-          <Text style={styles.title}>Send Transaction</Text>
-          <View style={styles.inputContainer}>
-            <TextInput
-              style={[styles.input, { flex: 1 }]}
-              placeholder="To Address"
-              placeholderTextColor="#666"
-              onChangeText={setToAddress}
-              value={toAddress}
-            />
-          </View>
-          <View style={styles.inputContainer}>
-            <TextInput
-              style={[styles.input, { flex: 1 }]}
-              placeholder="Amount"
-              placeholderTextColor="#666"
-              onChangeText={handleAmountChange}
-              keyboardType="numeric"
-              value={amount}
-            />
-            <TouchableOpacity
-              onPress={handleMaxAmount}
-              style={styles.maxButton}
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+      >
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <View>
+            <View style={styles.container}>
+              <TouchableOpacity
+                style={styles.headerBox}
+                onPress={() => navigation.goBack()}
+              >
+                <AntDesign name="leftcircle" size={22} color="white" />
+              </TouchableOpacity>
+              <Text style={styles.title}>Send Transaction</Text>
+              <View style={styles.inputContainer}>
+                <TextInput
+                  style={[styles.input, { flex: 1 }]}
+                  placeholder="To Address"
+                  placeholderTextColor="#fff"
+                  onChangeText={setToAddress}
+                  value={toAddress}
+                />
+              </View>
+              <View style={styles.inputContainer}>
+                <TextInput
+                  style={[styles.input, { flex: 1 }]}
+                  placeholder="Amount"
+                  placeholderTextColor="#fff"
+                  onChangeText={handleAmountChange}
+                  keyboardType="numeric"
+                  value={amount}
+                />
+                <TouchableOpacity onPress={handleMaxAmount}>
+                  <Text style={styles.maxButtonText}>Add Max</Text>
+                </TouchableOpacity>
+              </View>
+              <View style={styles.balanceContainer}>
+                <Text style={styles.balanceText}>Balance: {Balance}</Text>
+              </View>
+              <TouchableOpacity
+                onPress={handleSend}
+                style={styles.sendButton}
+              >
+                <Text style={styles.maxButtonText}>Send</Text>
+              </TouchableOpacity>
+            </View>
+            <Modal
+              animationType="slide"
+              transparent={true}
+              visible={is2FAModalVisible}
             >
-              <Text style={styles.maxButtonText}>Add Max</Text>
-            </TouchableOpacity>
-          </View>
-          <View style={styles.balanceContainer}>
-            <Text style={styles.balanceText}>Balance: {Balance}</Text>
-          </View>
-          <Button title="Send" onPress={handleSend} color="#008000" />
-          <Modal
-            animationType="slide"
-            transparent={true}
-            visible={is2FAModalVisible}
-          >
-            <View style={styles.modalBackground}>
-              <View style={styles.modalContainer}>
-                <LinearGradient colors={["#blue", "#green"]}>
+              <BlurView intensity={20} tint="dark" style={styles.modalBackground}>
+                <BlurView intensity={20} tint="dark" style={styles.modalContainer}>
+                  <TouchableOpacity
+                    style={styles.closeButton}
+                    onPress={() => setIs2FAModalVisible(false)}
+                  >
+                    <Ionicons name="close-circle" size={24} color="white" />
+                  </TouchableOpacity>
+                  <Text style={styles.modalText}>Enter 2FA Code</Text>
                   <SafeAreaView style={styles.modalView}>
                     {isLoading ? (
                       <ActivityIndicator
                         size="large"
-                        color="#008000"
-                        backgroundColor="#ECFFDC"
+                        color="#fff"
+                        backgroundColor="transparent"
                       />
                     ) : (
                       <>
@@ -178,28 +205,25 @@ const SendTransactionScreen = () => {
                           style={styles.input}
                           placeholder="Enter 2FA Code"
                           onChangeText={setTwoFACode}
+                          placeholderTextColor='#fff'
                           value={twoFACode}
                           keyboardType="numeric"
                         />
                         <Button
-                          title="Verify and Send"
+                          title="Verify"
                           onPress={verifyAndSend}
-                        />
-                        <Button
-                          title="Cancel"
-                          color="red"
-                          onPress={() => setIs2FAModalVisible(false)}
+                          color="white"
                         />
                       </>
                     )}
                   </SafeAreaView>
-                </LinearGradient>
-              </View>
-            </View>
-          </Modal>
-        </View>
-      </TouchableWithoutFeedback>
-    </KeyboardAvoidingView>
+                </BlurView>
+              </BlurView>
+            </Modal>
+          </View>
+        </TouchableWithoutFeedback>
+      </KeyboardAvoidingView>
+    </ImageBackground>
   );
 };
 
@@ -208,13 +232,12 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#ECFFDC",
   },
   title: {
     fontSize: 24,
     fontWeight: "bold",
     marginBottom: 20,
-    color: "#008000",
+    color: "#fff",
   },
   inputContainer: {
     flexDirection: "row",
@@ -222,20 +245,33 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     width: 350,
   },
+  headerBox: {
+    position: "absolute",
+    left: 8,
+    flexDirection: "row",
+    top: 25,
+  },
   input: {
     height: 50,
     margin: 12,
     borderWidth: 1,
-    borderColor: "#A9A9A9",
+    borderColor: "#fff",
     borderRadius: 10,
     padding: 10,
-    backgroundColor: "white",
-    color: "black",
+    backgroundColor: "transparent",
+    color: "#fff",
   },
   maxButton: {
-    backgroundColor: "#008000",
+    backgroundColor: "green",
     padding: 10,
     borderRadius: 5,
+  },
+  sendButton: {
+    backgroundColor: "green",
+    paddingHorizontal: 50,
+    paddingVertical: 10,
+    borderRadius: 5,
+    marginTop: 10,
   },
   maxButtonText: {
     color: "white",
@@ -247,22 +283,26 @@ const styles = StyleSheet.create({
     width: "80%",
   },
   balanceText: {
-    color: "#008000",
+    color: "#fff",
     flex: 1,
-    float: "left",
+    left: 0,
     fontWeight: "bold",
   },
   modalBackground: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "rgba(0, 255, 0, 0.2)",
+    width: "100%"
+  },
+  modalText: {
+    textAlign: "center",
+    color: "#fff",
   },
   modalView: {
     margin: 20,
-    backgroundColor: "white",
+    backgroundColor: "transparent",
     borderRadius: 20,
-    padding: 35,
+    padding: 55,
     alignItems: "center",
     shadowColor: "#000",
     shadowOffset: {
@@ -274,16 +314,21 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   modalContainer: {
-    width: "80%", 
-    backgroundColor: "white", 
-    padding: 20, 
-    borderRadius: 20, 
-    elevation: 20, 
-    shadowColor: "#000", 
-    shadowOffset: { width: 0, height: 2 }, 
-    shadowOpacity: 0.25, 
-    shadowRadius: 3.84, 
-    alignItems: "center", 
+    width: "80%",
+    padding: 20,
+    borderRadius: 20,
+    elevation: 20,
+    shadowColor: "#000",
+    borderRadius: 20,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    alignItems: "center",
+  },
+  closeButton: {
+    position: "absolute",
+    top: 15,
+    left: 15,
   },
 });
 

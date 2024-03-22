@@ -14,7 +14,7 @@ export const WalletProvider = ({ children }) => {
   const [transactions, setTransactions] = useState([]);
   const [tokens, setTokens] = useState([]);
   const [isEnabled2FA, setIsEnabled2FA] = useState(false);
-  const BASE_URL = "http://172.20.10.4";
+  const BASE_URL = "https://api.agrotest.online";
   useEffect(() => {
     const loadNetwork = async () => {
       const savedNetwork = await AsyncStorage.getItem("selectedNetwork");
@@ -42,6 +42,34 @@ export const WalletProvider = ({ children }) => {
       navigation.navigate("Dashboard");
     } catch (error) {
       console.error(error);
+    }
+  };
+
+  const changePassword = async (currentPassword, newPassword) => {
+    const token = await AsyncStorage.getItem("userToken");
+    
+    try {
+      const response = await fetch(`${BASE_URL}/change-password`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          token,
+          currentPassword,
+          newPassword,
+        }),
+      });
+  
+      const data = await response.text();
+      if (!response.ok) {
+        throw new Error(data || "Password change failed");
+      }
+  
+      Alert.alert("Success", "Password successfully changed");
+    } catch (error) {
+      console.error("Error changing password:", error);
+      Alert.alert("Error", error.toString());
     }
   };
 
@@ -107,7 +135,7 @@ export const WalletProvider = ({ children }) => {
         Alert.alert("Error", "Failed to create user");
       }
     } catch (error) {
-      Alert.alert("Error", error.toString());
+      console.error(error);
     }
   };
 
@@ -136,7 +164,7 @@ export const WalletProvider = ({ children }) => {
       setWallet(data);
       await AsyncStorage.setItem("walletData", JSON.stringify(data));
     } catch (error) {
-      Alert.alert("Error", error.toString());
+      console.error(error);
     }
   };
 
@@ -235,7 +263,7 @@ const listCustomNetworks = async () => {
         setTransactions([]);
       }
     } catch (error) {
-      Alert.alert("Error", error.toString());
+      console.error(error);
       setTransactions([]);
     }
   };
@@ -365,7 +393,6 @@ const listCustomNetworks = async () => {
       }
     } catch (error) {
       console.error(error);
-      Alert.alert("Login Error", error.toString());
     }
   };
 
@@ -389,28 +416,31 @@ const listCustomNetworks = async () => {
     }
   };
 
-  const getTransactionFee = async (networkName) => {
+  const getTransactionFee = async () => {
     try {
       const response = await fetch(`${BASE_URL}/get-transaction-fee`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ networkName }),
+        body: JSON.stringify({ "networkName": selectedNetwork }),
       });
-
-      const data = await response.json();
-
+  
       if (!response.ok) {
         const errorText = await response.text();
-        throw new Error(errorText);
+        console.error("Sunucu hatası:", errorText);
+        throw new Error(`Sunucu hatası: ${response.status}`);
+      } else {
+        console.log(data);
       }
+  
+      const data = await response.json();
       return data;
     } catch (error) {
-      console.error(error);
+      console.error("İstek hatası:", error);
       throw error;
     }
-  };
+  };  
 
   const getTokenBalance = async (networkName, tokenAddress, walletAddress) => {
     try {

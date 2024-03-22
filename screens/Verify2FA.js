@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   Alert,
+  ImageBackground,
 } from "react-native";
 import { WalletContext } from "../utils/WalletContext";
 import { useNavigation } from "@react-navigation/native";
@@ -26,38 +27,46 @@ const Verify2FAScreen = () => {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Verify 2FA</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Enter your 2FA code"
-        value={twoFactorToken}
-        onChangeText={setTwoFactorToken}
-        keyboardType="numeric"
-      />
-      <TouchableOpacity style={styles.button} onPress={handleVerify2FA}>
-        <Text style={styles.buttonText}>Verify</Text>
-      </TouchableOpacity>
-    </View>
+    <ImageBackground style={styles.main} source={require("../assets/bg.jpg")}>
+      <View style={styles.container}>
+        <Text style={styles.title}>Verify 2FA</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Enter your 2FA code"
+          value={twoFactorToken}
+          onChangeText={setTwoFactorToken}
+          keyboardType="numeric"
+          placeholderTextColor="#fff"
+        />
+        <TouchableOpacity style={styles.button} onPress={handleVerify2FA}>
+          <Text style={styles.buttonText}>Verify</Text>
+        </TouchableOpacity>
+      </View>
+    </ImageBackground>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
+  main: {
     flex: 1,
+    justifyContent: "center",
+    resizeMode: "cover",
+  },
+  container: {
     justifyContent: "center",
     alignItems: "center",
     padding: 20,
-    backgroundColor: "#ECFFDC",
   },
   title: {
     fontSize: 22,
     fontWeight: "bold",
     marginBottom: 20,
+    color: "#fff",
   },
   input: {
-    width: "100%",
-    borderColor: "gray",
+    width: "90%",
+    borderColor: "#fff",
+    color: '#fff',
     borderWidth: 1,
     borderRadius: 5,
     padding: 15,

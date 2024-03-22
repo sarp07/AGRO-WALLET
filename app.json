@@ -1,8 +1,9 @@
 {
   "expo": {
-    "name": "agro-expo-wallet",
+    "name": "agro-wallet",
     "slug": "agro-expo-wallet",
-    "version": "1.0.0",
+    "version": "1.0.2",
+    "author": "Solazan",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -21,10 +22,16 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.solazan.agrowallet"
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "f54c1b26-2923-413c-bd9e-b520db667c11"
+      }
     }
   }
 }

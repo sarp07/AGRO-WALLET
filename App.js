@@ -26,67 +26,54 @@ export default function App() {
           <Stack.Screen
             name="Home"
             component={Home}
-            options={{ title: "Agro Wallet" }}
           />
           <Stack.Screen
             name="Create"
             component={Create}
-            options={{ title: "Create Wallet" }}
           />
           <Stack.Screen
             name="Login"
             component={Login}
-            options={{ title: "Login Wallet" }}
           />
           <Stack.Screen
             name="Import"
             component={Import}
-            options={{ title: "Import Wallet" }}
           />
           <Stack.Screen
             name="Generate"
             component={Generate}
-            options={{ title: "Generate Wallet" }}
           />
           <Stack.Screen
             name="Approve"
             component={Approve}
-            options={{ title: "Approve Wallet" }}
           />
           <Stack.Screen
             name="Dashboard"
             component={Dashboard}
-            options={{ title: "Dashboard" }}
           />
           <Stack.Screen
             name="Networks"
             component={Networks}
-            options={{ title: "Networks" }}
           />
           <Stack.Screen
             name="SendTransaction"
             component={SendTransaction}
-            options={{ title: "SendTransaction" }}
           />
           <Stack.Screen
             name="SendToken"
             component={SendToken}
-            options={{ title: "SendToken" }}
           />
           <Stack.Screen
             name="AddToken"
             component={AddToken}
-            options={{ title: "AddToken" }}
           />
           <Stack.Screen
             name="Settings"
             component={Settings}
-            options={{ title: "Settings" }}
           />
           <Stack.Screen
             name="Verify2FA"
             component={Verify2FA}
-            options={{ title: "Verify2FA" }}
           />
         </Stack.Navigator>
       </WalletProvider>

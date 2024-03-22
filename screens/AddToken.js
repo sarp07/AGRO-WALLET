@@ -1,5 +1,5 @@
 import React, { useState, useContext } from "react";
-import { View, Text, TextInput, StyleSheet, Button, Alert, ImageBackground } from "react-native";
+import { View, Text, TextInput, StyleSheet, Button, Alert, ImageBackground, TouchableOpacity} from "react-native";
 import { WalletContext } from "../utils/WalletContext";
 import { useNavigation } from "@react-navigation/native";
 
@@ -33,37 +33,41 @@ const TokenImportScreen = () => {
       style={styles.backgroud}
     >
       <View style={styles.container}>
-        <Text style={styles.title}>Import a Token</Text>
+        <Text style={styles.header}>Import Token</Text>
         <TextInput
           style={styles.input}
           placeholder="Token Address"
-          placeholderTextColor="#666"
+          placeholderTextColor="#fff"
           value={tokenAddress}
           onChangeText={setTokenAddress}
         />
         <TextInput
           style={styles.input}
           placeholder="Token Name"
-          placeholderTextColor="#666"
+          placeholderTextColor="#fff"
           value={tokenName}
           onChangeText={setTokenName}
         />
         <TextInput
           style={styles.input}
           placeholder="Token Symbol"
-          placeholderTextColor="#666"
+          placeholderTextColor="#fff"
           value={tokenSymbol}
           onChangeText={setTokenSymbol}
         />
         <TextInput
           style={styles.input}
           placeholder="Token Decimall"
-          placeholderTextColor="#666"
+          placeholderTextColor="#fff"
           value={tokenDecimal}
           onChangeText={setTokenDecimal}
           keyboardType="numeric"
         />
-        <Button title="Import Token" onPress={handleAddToken} color="#fff" />
+        <TouchableOpacity style={styles.networkButton2} onPress={handleAddToken}>
+          <Text style={styles.networkName}>
+            Import
+          </Text>
+        </TouchableOpacity>
       </View>
     </ImageBackground>
   );
@@ -86,15 +90,21 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     textAlign: "center",
   },
+  header: {
+    fontSize: 22,
+    fontWeight: "bold",
+    color: "#fff",
+    padding: 20,
+  },
   input: {
     height: 50,
     marginBottom: 15,
     borderWidth: 1,
-    borderColor: "#ddd",
+    borderColor: "#fff",
     padding: 10,
     fontSize: 16,
     borderRadius: 8,
-    backgroundColor: "white",
+    backgroundColor: "transparent",
     color: "#fff",
   },
   button: {
@@ -106,6 +116,18 @@ const styles = StyleSheet.create({
   buttonText: {
     color: "white",
     fontWeight: "bold",
+    fontSize: 16,
+  },
+  networkButton2: {
+    backgroundColor: "green",
+    padding: 15,
+    marginHorizontal: 20,
+    marginTop: 10,
+    borderRadius: 10,
+    alignItems: "center",
+  },
+  networkName: {
+    color: "white",
     fontSize: 16,
   },
 });

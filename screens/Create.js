@@ -12,6 +12,7 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
   ImageBackground,
+  ScrollView,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { WalletContext } from "../utils/WalletContext";
@@ -44,59 +45,67 @@ const CreateWalletScreen = () => {
           source={require("../assets/bg.jpg")}
           style={styles.backgroud}
         >
-          <View style={styles.innerContainer}>
-            <Image
-              source={require("../assets/agro_whiteLogo.png")}
-              style={styles.logo}
-            />
-            <Text style={styles.title}>Set Your Username</Text>
-            <View style={styles.inputRow}>
-              <TextInput
-                style={styles.input}
-                onChangeText={setUsername}
-                value={username}
-                placeholder="Enter an uniqe username"
+          <ScrollView>
+            <View style={styles.innerContainer}>
+              <Image
+                source={require("../assets/agro_whiteLogo.png")}
+                style={styles.logo}
               />
-            </View>
-            <Text style={styles.title}>Set Your Password</Text>
-            <View style={styles.inputRow}>
-              <TextInput
-                style={styles.input}
-                onChangeText={setPassword}
-                value={password}
-                placeholder="Enter a strong password"
-                secureTextEntry={passwordVisibility}
-              />
+              <Text style={styles.title}>Set Your Username</Text>
+              <View style={styles.inputRow}>
+                <TextInput
+                  style={styles.input}
+                  onChangeText={setUsername}
+                  value={username}
+                  placeholder="Enter an uniqe username"
+                  placeholderTextColor="#fff"
+                />
+              </View>
+              <Text style={styles.title}>Set Your Password</Text>
+              <View style={styles.inputRow}>
+                <TextInput
+                  style={styles.input}
+                  onChangeText={setPassword}
+                  value={password}
+                  placeholder="Enter a strong password"
+                  secureTextEntry={passwordVisibility}
+                  placeholderTextColor="#fff"
+                />
+                <TouchableOpacity
+                  onPress={() => setPasswordVisibility(!passwordVisibility)}
+                >
+                  <Text style={styles.toggle}>
+                    {passwordVisibility ? "Show" : "Hide"}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+              <View style={styles.inputRow}>
+                <TextInput
+                  style={styles.input}
+                  onChangeText={setConfirmPassword}
+                  value={confirmPassword}
+                  placeholder="Confirm your password"
+                  secureTextEntry={confirmPasswordVisibility}
+                  placeholderTextColor="#fff"
+                />
+                <TouchableOpacity
+                  onPress={() =>
+                    setConfirmPasswordVisibility(!confirmPasswordVisibility)
+                  }
+                >
+                  <Text style={styles.toggle}>
+                    {confirmPasswordVisibility ? "Show" : "Hide"}
+                  </Text>
+                </TouchableOpacity>
+              </View>
               <TouchableOpacity
-                onPress={() => setPasswordVisibility(!passwordVisibility)}
+                style={styles.button}
+                onPress={handleCreateUser}
               >
-                <Text style={styles.toggle}>
-                  {passwordVisibility ? "Show" : "Hide"}
-                </Text>
+                <Text style={styles.buttonText}>Create Wallet</Text>
               </TouchableOpacity>
             </View>
-            <View style={styles.inputRow}>
-              <TextInput
-                style={styles.input}
-                onChangeText={setConfirmPassword}
-                value={confirmPassword}
-                placeholder="Confirm your password"
-                secureTextEntry={confirmPasswordVisibility}
-              />
-              <TouchableOpacity
-                onPress={() =>
-                  setConfirmPasswordVisibility(!confirmPasswordVisibility)
-                }
-              >
-                <Text style={styles.toggle}>
-                  {confirmPasswordVisibility ? "Show" : "Hide"}
-                </Text>
-              </TouchableOpacity>
-            </View>
-            <TouchableOpacity style={styles.button} onPress={handleCreateUser}>
-              <Text style={styles.buttonText}>Create Wallet</Text>
-            </TouchableOpacity>
-          </View>
+          </ScrollView>
         </ImageBackground>
       </TouchableWithoutFeedback>
     </KeyboardAvoidingView>

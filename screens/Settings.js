@@ -14,9 +14,10 @@ import {
   Clipboard,
   ImageBackground,
 } from "react-native";
-import { Ionicons, Entypo } from "@expo/vector-icons";
+import { Ionicons, Entypo, AntDesign } from "@expo/vector-icons";
 import { WalletContext } from "../utils/WalletContext";
 import { BlurView } from "expo-blur";
+import { useNavigation } from "@react-navigation/native";
 
 const Accordion = ({ title, children }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -41,23 +42,23 @@ const Accordion = ({ title, children }) => {
 
   return (
     <View>
-      <TouchableOpacity
-        style={styles.accordionHeader}
-        onPress={toggleAccordion}
-      >
-        <BlurView style={styles.glasMorpishm} intensity={20} tint="light">
+      <BlurView style={styles.glasMorpishm} intensity={20} tint="dark">
+        <TouchableOpacity
+          style={styles.accordionHeader}
+          onPress={toggleAccordion}
+        >
           <Text style={styles.accordionHeaderText}>{title}</Text>
           <Animated.View style={{ transform: [{ rotateX: arrowAngle }] }}>
             <Entypo name="chevron-up" size={24} color="white" />
           </Animated.View>
-        </BlurView>
-      </TouchableOpacity>
+        </TouchableOpacity>
+      </BlurView>
       {isOpen && (
         <Animated.View
           style={[styles.accordionContent, { opacity: animation }]}
         >
-        <BlurView style={styles.glasMorpishm} intensity={20} tint="light">
-          {children}
+          <BlurView style={styles.accordionContent2} intensity={20} tint="dark">
+            {children}
           </BlurView>
         </Animated.View>
       )}
@@ -73,12 +74,41 @@ const SettingsScreen = () => {
     disable2FA,
     isEnabled2FA,
     setIsEnabled2FA,
+    wallet,
+    changePassword,
   } = useContext(WalletContext);
   const [show2FAModal, setShow2FAModal] = useState(false);
   const [shows2FAModal, setShows2FAModal] = useState(false);
   const [twoFactorToken, setTwoFactorToken] = useState("");
   const [qrCodeUrl, setQrCodeUrl] = useState("");
   const [secretCode, setSecretCode] = useState("");
+  const navigation = useNavigation();
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [showPrivateKey, setShowPrivateKey] = useState(false);
+
+  const handleSubmit = () => {
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      Alert.alert("Error", "Please fill in all fields.");
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      Alert.alert("Error", "New passwords do not match.");
+      return;
+    }
+    changePassword(currentPassword, newPassword);
+  };
+
+  const togglePrivateKeyVisibility = () => {
+    setShowPrivateKey(!showPrivateKey);
+  };
+
+  const copyToPrivKey = () => {
+    Clipboard.setString(wallet.privateKey);
+    alert("Private key copied to clipboard!");
+    setShowPrivateKey(false);
+  };
 
   const copySecretToClipboard = () => {
     Clipboard.setString(secretCode);
@@ -123,10 +153,45 @@ const SettingsScreen = () => {
       style={styles.backgroud}
     >
       <ScrollView style={styles.container}>
+        <TouchableOpacity
+          style={styles.headerBox}
+          onPress={() => navigation.goBack()}
+        >
+          <AntDesign name="leftcircle" size={22} color="white" />
+          <Text style={styles.header}>Settings</Text>
+        </TouchableOpacity>
         <Accordion title="Change Password">
-          {/* Şifre değiştirme alanları */}
+          <View style={styles.switchContainer}>
+            <Text style={styles.switchText}>Change Your Password :</Text>
+          </View>
+          <TextInput
+        style={styles.passInput}
+        placeholder="Current Password"
+        placeholderTextColor="#fff"
+        secureTextEntry
+        value={currentPassword}
+        onChangeText={setCurrentPassword}
+      />
+      <TextInput
+        style={styles.passInput}
+        placeholder="New Password"
+        placeholderTextColor="#fff"
+        secureTextEntry
+        value={newPassword}
+        onChangeText={setNewPassword}
+      />
+      <TextInput
+        style={styles.passInput}
+        placeholder="Confirm Password"
+        placeholderTextColor="#fff"
+        secureTextEntry
+        value={confirmPassword}
+        onChangeText={setConfirmPassword}
+      />
+      <TouchableOpacity style={styles.button} onPress={handleSubmit}>
+        <Text style={styles.buttonText}>Submit</Text>
+      </TouchableOpacity>
         </Accordion>
-        <Accordion title="Set Avatar">{/* Avatar ayarlama alanı */}</Accordion>
         <Accordion title="2FA Options">
           <View style={styles.switchContainer}>
             <Text style={styles.switchText}>Two-Factor Authentication: </Text>
@@ -141,19 +206,46 @@ const SettingsScreen = () => {
             This adds an extra layer of security to your account.
           </Text>
         </Accordion>
+        <Accordion title="Get Private Key">
+          <View style={styles.switchContainer}>
+            <Text style={styles.switchText}>Private Key :</Text>
+          </View>
+          <View style={styles.rowContainer}>
+            {showPrivateKey ? (
+              <>
+                <TouchableOpacity>
+                  <Text style={styles.privKey}>{wallet.privateKey}</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.icon} onPress={copyToPrivKey}>
+                  <Ionicons name="copy-outline" size={20} color="#fff" />
+                </TouchableOpacity>
+              </>
+            ) : (
+              <TouchableOpacity>
+                <Text style={styles.privKey2}>*****************</Text>
+              </TouchableOpacity>
+            )}
+          </View>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={togglePrivateKeyVisibility}
+          >
+            <Text style={styles.buttonText}>Show Private Key</Text>
+          </TouchableOpacity>
+        </Accordion>
         <Modal
           animationType="slide"
           transparent={true}
           visible={show2FAModal}
           onRequestClose={() => setShow2FAModal(false)}
         >
-          <View style={styles.centeredView}>
-            <View style={styles.modalView}>
+          <BlurView style={styles.centeredView}>
+            <BlurView style={styles.modalView} intensity={20} tint="dark">
               <TouchableOpacity
                 style={styles.closeButton}
                 onPress={() => setShow2FAModal(false)}
               >
-                <Ionicons name="close-circle" size={24} color="black" />
+                <Ionicons name="close-circle" size={24} color="white" />
               </TouchableOpacity>
               <Text style={styles.modalText}>
                 Scan this QR code with your 2FA app
@@ -175,6 +267,7 @@ const SettingsScreen = () => {
                 value={twoFactorToken}
                 onChangeText={setTwoFactorToken}
                 keyboardType="numeric"
+                color="white"
               />
               <TouchableOpacity
                 style={[styles.button, styles.buttonClose]}
@@ -182,8 +275,8 @@ const SettingsScreen = () => {
               >
                 <Text style={styles.textStyle}>Verify</Text>
               </TouchableOpacity>
-            </View>
-          </View>
+            </BlurView>
+          </BlurView>
         </Modal>
         <Modal
           animationType="slide"
@@ -191,8 +284,8 @@ const SettingsScreen = () => {
           visible={shows2FAModal}
           onRequestClose={() => setShows2FAModal(false)}
         >
-          <View style={styles.centeredView}>
-            <View style={styles.modalView}>
+          <BlurView style={styles.centeredView}>
+            <BlurView style={styles.modalView} intensity={20} tint="dark">
               <TouchableOpacity
                 style={styles.closeButton}
                 onPress={() => setShows2FAModal(false)}
@@ -208,6 +301,7 @@ const SettingsScreen = () => {
                 value={twoFactorToken}
                 onChangeText={setTwoFactorToken}
                 keyboardType="numeric"
+                color="white"
               />
               <TouchableOpacity
                 style={[styles.button, styles.buttonClose]}
@@ -215,8 +309,8 @@ const SettingsScreen = () => {
               >
                 <Text style={styles.textStyle}>Verify</Text>
               </TouchableOpacity>
-            </View>
-          </View>
+            </BlurView>
+          </BlurView>
         </Modal>
       </ScrollView>
     </ImageBackground>
@@ -238,11 +332,41 @@ const styles = StyleSheet.create({
     width: "100%",
     alignSelf: "center",
   },
+  headerBox: {
+    flex: 1,
+    flexDirection: "row",
+    alignContent: "center",
+    padding: 15,
+    gap: 15,
+  },
+  rowContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    padding: 15,
+    borderWidth: 1,
+    borderRadius: 5,
+    borderColor: '#fff',
+    fontSize: 14,
+  },
+  header: {
+    fontSize: 22,
+    fontWeight: "bold",
+    color: "#fff",
+  },
   glasMorpishm: {
+    flex: 1,
     flexDirection: "row",
     justifyContent: "space-between",
     padding: 15,
     marginTop: 10,
+    borderRadius: 5,
+    alignItems: "center",
+    width: "85%",
+    alignSelf: "center",
+  },
+  glasMorpishm2: {
+    flex: 1,
+    padding: 15,
     borderRadius: 5,
     alignItems: "center",
     width: "85%",
@@ -253,23 +377,33 @@ const styles = StyleSheet.create({
     color: "white",
   },
   accordionContent: {
-    backgroundColor: "#ECFFDC",
-    padding: 15,
+    marginTop: 5,
+    marginBottom: 15,
+    backgroundColor: "transparent",
+    borderRadius: 5,
     width: "85%",
     alignSelf: "center",
   },
+  accordionContent2: {
+    flex: 1,
+    padding: 15,
+    width: "100%",
+    borderRadius: 10,
+    alignSelf: "center",
+  },
   input: {
-    backgroundColor: "white",
+    backgroundColor: "transparent",
     borderRadius: 5,
     padding: 10,
     marginVertical: 5,
     width: "100%",
-    borderColor: "green",
+    borderColor: "#fff",
     borderWidth: 1,
     marginTop: 10,
+    color: "#fff",
   },
   button: {
-    backgroundColor: "lightgreen",
+    backgroundColor: "green",
     padding: 10,
     borderRadius: 5,
     alignItems: "center",
@@ -283,17 +417,41 @@ const styles = StyleSheet.create({
   switchContainer: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 10,
+    marginBottom: 15,
+    marginTop: 15,
+    backgroundColor: "transparent",
   },
   switchText: {
     fontSize: 16,
-    color: "black",
+    color: "#fff",
   },
   warningText: {
-    color: "red",
-    backgroundColor: "gray",
+    color: "#fff",
+    backgroundColor: "red",
     padding: 10,
-    borderRadius: 15,
+    borderRadius: 5,
+  },
+  privKey: {
+    color: "#fff",
+    paddingRight: 45,
+  },
+  icon: {
+    color: '#fff',
+    width: '40%',
+    right: 20,
+    justifyContent: 'center'
+  },
+  privKey2: {
+    color: "#fff",
+  },
+  passInput: {
+    color: "#fff",
+    backgroundColor: "transparent",
+    padding: 10,
+    margin: 10,
+    borderRadius: 5,
+    borderWidth: 1,
+    borderColor: "#fff",
   },
   disclaimerText: {
     color: "red",
@@ -304,11 +462,10 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    marginTop: 22,
   },
   modalView: {
     margin: 20,
-    backgroundColor: "white",
+    backgroundColor: "transparent",
     borderRadius: 20,
     padding: 35,
     alignItems: "center",
@@ -324,11 +481,14 @@ const styles = StyleSheet.create({
   modalText: {
     marginBottom: 15,
     textAlign: "center",
+    color: "#fff",
+    fontWeight: "bold",
   },
   qrCode: {
     width: 200,
     height: 200,
     marginBottom: 15,
+    borderRadius: 10,
   },
   buttonClose: {
     backgroundColor: "#2196F3",
