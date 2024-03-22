@@ -98,6 +98,7 @@ const SettingsScreen = () => {
       return;
     }
     changePassword(currentPassword, newPassword);
+    navigation.navigate("Dashboard");
   };
 
   const togglePrivateKeyVisibility = () => {

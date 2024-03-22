@@ -46,7 +46,7 @@ export const WalletProvider = ({ children }) => {
   };
 
   const changePassword = async (currentPassword, newPassword) => {
-    const token = await AsyncStorage.getItem("userToken");
+    const token = user.token;
     
     try {
       const response = await fetch(`${BASE_URL}/change-password`, {
@@ -590,6 +590,7 @@ const listCustomNetworks = async () => {
         loginWallet,
         importWallet,
         logout,
+        changePassword,
         selectedNetwork,
         selectNetwork,
         sendTransaction,
