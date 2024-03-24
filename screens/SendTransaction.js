@@ -48,13 +48,19 @@ const SendTransactionScreen = () => {
     if (isEnabled2FA) {
       setIs2FAModalVisible(true);
     } else {
+      setIsLoading(true);
       await completeTransaction();
+      navigation.navigate('Dashboard');
     }
   };
 
   const completeTransaction = async () => {
-    setIsLoading(true);
     try {
+      if (!isValidEthereumAddress(toAddress)) {
+        Alert.alert("Invalid Address", "The address you entered is not a valid wallet address.");
+        setIsLoading(false);
+        return;
+      }
       const success = await sendTransaction(toAddress, amount);
       if (success) {
         Alert.alert("Success", "Transaction sent successfully", [
@@ -68,10 +74,15 @@ const SendTransactionScreen = () => {
     setIs2FAModalVisible(false);
   };
 
+  const isValidEthereumAddress = (address) => {
+    const re = /^0x[a-fA-F0-9]{40}$/;
+    return re.test(address);
+  };
+
   const verifyAndSend = async () => {
-    setIsLoading(true);
     const success = await verify2FA(twoFACode);
     if (success) {
+      setIsLoading(true);
       await completeTransaction();
       navigation.navigate("Dashboard");
     } else {
@@ -84,7 +95,6 @@ const SendTransactionScreen = () => {
     setIsLoading(true);
     try {
       let data;
-      // Seçilen ağ BSC-Testnet ise gaz bedelini 3 gwei olarak ayarla
       if (selectedNetwork === 'BSC-Testnet') {
         data = { gasPrice: '0.00009' };
       } else {
@@ -220,6 +230,18 @@ const SendTransactionScreen = () => {
                 </BlurView>
               </BlurView>
             </Modal>
+            <Modal
+              animationType="slide"
+              transparent={true}
+              visible={isLoading}
+            >
+              <BlurView intensity={20} tint="dark" style={styles.modalBackground}>
+                <ActivityIndicator
+                  size="large"
+                  color="#fff"
+                />
+              </BlurView>
+            </Modal>
           </View>
         </TouchableWithoutFeedback>
       </KeyboardAvoidingView>
@@ -249,7 +271,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     left: 8,
     flexDirection: "row",
-    top: 25,
+    top: 65,
   },
   input: {
     height: 50,

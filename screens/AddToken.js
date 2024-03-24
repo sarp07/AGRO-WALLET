@@ -1,7 +1,17 @@
 import React, { useState, useContext } from "react";
-import { View, Text, TextInput, StyleSheet, Button, Alert, ImageBackground, TouchableOpacity} from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  StyleSheet,
+  Button,
+  Alert,
+  ImageBackground,
+  TouchableOpacity,
+} from "react-native";
 import { WalletContext } from "../utils/WalletContext";
 import { useNavigation } from "@react-navigation/native";
+import { AntDesign, Ionicons } from "@expo/vector-icons";
 
 const TokenImportScreen = () => {
   const { addToken, selectedNetwork } = useContext(WalletContext);
@@ -33,7 +43,13 @@ const TokenImportScreen = () => {
       style={styles.backgroud}
     >
       <View style={styles.container}>
-        <Text style={styles.header}>Import Token</Text>
+        <TouchableOpacity
+          style={styles.headerBox}
+          onPress={() => navigation.goBack()}
+        >
+        <AntDesign name="leftcircle" size={22} color="white" />
+          <Text style={styles.header}>Import Token</Text>
+        </TouchableOpacity>
         <TextInput
           style={styles.input}
           placeholder="Token Address"
@@ -63,10 +79,11 @@ const TokenImportScreen = () => {
           onChangeText={setTokenDecimal}
           keyboardType="numeric"
         />
-        <TouchableOpacity style={styles.networkButton2} onPress={handleAddToken}>
-          <Text style={styles.networkName}>
-            Import
-          </Text>
+        <TouchableOpacity
+          style={styles.networkButton2}
+          onPress={handleAddToken}
+        >
+          <Text style={styles.networkName}>Import</Text>
         </TouchableOpacity>
       </View>
     </ImageBackground>
@@ -82,6 +99,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
+    marginTop: 10,
   },
   title: {
     fontSize: 22,
@@ -95,6 +113,12 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "#fff",
     padding: 20,
+  },
+  headerBox: {
+    gap: 10,
+    marginVertical: 20,
+    alignItems: 'center',
+    flexDirection: 'row',
   },
   input: {
     height: 50,

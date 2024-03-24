@@ -13,7 +13,6 @@ import {
   Keyboard,
   Modal,
   ActivityIndicator,
-  SafeAreaView,
 } from 'react-native';
 import { WalletContext } from '../utils/WalletContext';
 import { BlurView } from 'expo-blur';
@@ -43,14 +42,23 @@ const SendTokenScreen = ({ route, navigation }) => {
   const completeTransaction = async () => {
     setIsLoading(true);
     try {
+      if (!isValidEthereumAddress(toAddress)) {
+        Alert.alert("Invalid Address", "The address you entered is not a valid wallet address.");
+        setIsLoading(false);
+        return;
+      }
       await sendERC20Token(toAddress, amount, tokenAddress);
-      Alert.alert('Success', 'Token has been successfully sent');
       navigation.goBack();
     } catch (error) {
       Alert.alert('Error', 'Failed to send token');
     }
     setIsLoading(false);
     setIs2FAModalVisible(false);
+  };
+
+  const isValidEthereumAddress = (address) => {
+    const re = /^0x[a-fA-F0-9]{40}$/;
+    return re.test(address);
   };
 
   const verifyAndSend = async () => {
@@ -152,6 +160,18 @@ const SendTokenScreen = ({ route, navigation }) => {
                 </BlurView>
               </BlurView>
             </Modal>
+            <Modal
+              animationType="slide"
+              transparent={true}
+              visible={isLoading}
+            >
+              <BlurView intensity={20} tint="dark" style={styles.modalBackground}>
+                <ActivityIndicator
+                  size="large"
+                  color="#fff"
+                />
+              </BlurView>
+            </Modal>
           </View>
         </TouchableWithoutFeedback>
       </KeyboardAvoidingView>
@@ -169,7 +189,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     left: 8,
     flexDirection: 'row',
-    top: 25,
+    top: 65,
   },
   title: {
     fontSize: 24,
@@ -267,6 +287,12 @@ const styles = StyleSheet.create({
   },
   modalSendButtonText: {
     color: "white",
+  },
+  modalBackground: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    width: "100%"
   },
 });
 

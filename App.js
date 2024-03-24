@@ -15,6 +15,7 @@ import Settings from "./screens/Settings";
 import Import from "./screens/Import";
 import SendToken from "./screens/SendToken";
 import Verify2FA from "./screens/Verify2FA";
+import Browser from "./screens/Browser";
 
 const Stack = createNativeStackNavigator();
 
@@ -22,59 +23,25 @@ export default function App() {
   return (
     <NavigationContainer>
       <WalletProvider>
-        <Stack.Navigator>
-          <Stack.Screen
-            name="Home"
-            component={Home}
-          />
-          <Stack.Screen
-            name="Create"
-            component={Create}
-          />
-          <Stack.Screen
-            name="Login"
-            component={Login}
-          />
-          <Stack.Screen
-            name="Import"
-            component={Import}
-          />
-          <Stack.Screen
-            name="Generate"
-            component={Generate}
-          />
-          <Stack.Screen
-            name="Approve"
-            component={Approve}
-          />
-          <Stack.Screen
-            name="Dashboard"
-            component={Dashboard}
-          />
-          <Stack.Screen
-            name="Networks"
-            component={Networks}
-          />
-          <Stack.Screen
-            name="SendTransaction"
-            component={SendTransaction}
-          />
-          <Stack.Screen
-            name="SendToken"
-            component={SendToken}
-          />
-          <Stack.Screen
-            name="AddToken"
-            component={AddToken}
-          />
-          <Stack.Screen
-            name="Settings"
-            component={Settings}
-          />
-          <Stack.Screen
-            name="Verify2FA"
-            component={Verify2FA}
-          />
+        <Stack.Navigator
+          screenOptions={{
+            headerShown: false,
+          }}
+        >
+          <Stack.Screen name="Home" component={Home} />
+          <Stack.Screen name="Create" component={Create} />
+          <Stack.Screen name="Login" component={Login} />
+          <Stack.Screen name="Import" component={Import} />
+          <Stack.Screen name="Generate" component={Generate} />
+          <Stack.Screen name="Approve" component={Approve} />
+          <Stack.Screen name="Dashboard" component={Dashboard} />
+          <Stack.Screen name="Networks" component={Networks} />
+          <Stack.Screen name="SendTransaction" component={SendTransaction} />
+          <Stack.Screen name="SendToken" component={SendToken} />
+          <Stack.Screen name="AddToken" component={AddToken} />
+          <Stack.Screen name="Settings" component={Settings} />
+          <Stack.Screen name="Verify2FA" component={Verify2FA} />
+          <Stack.Screen name="Browser" component={Browser} />
         </Stack.Navigator>
       </WalletProvider>
     </NavigationContainer>

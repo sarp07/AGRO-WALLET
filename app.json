@@ -2,7 +2,7 @@
   "expo": {
     "name": "agro-wallet",
     "slug": "agro-expo-wallet",
-    "version": "1.0.3",
+    "version": "1.0.4",
     "author": "Solazan",
     "orientation": "portrait",
     "icon": "./assets/icon.png",

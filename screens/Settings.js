@@ -87,8 +87,9 @@ const SettingsScreen = () => {
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPrivateKey, setShowPrivateKey] = useState(false);
+  const [is2FACompleted, setis2FACompleted] = useState(false);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!currentPassword || !newPassword || !confirmPassword) {
       Alert.alert("Error", "Please fill in all fields.");
       return;
@@ -97,7 +98,7 @@ const SettingsScreen = () => {
       Alert.alert("Error", "New passwords do not match.");
       return;
     }
-    changePassword(currentPassword, newPassword);
+    await changePassword(currentPassword, newPassword);
     navigation.navigate("Dashboard");
   };
 
@@ -122,8 +123,13 @@ const SettingsScreen = () => {
       setShow2FAModal(true);
       setQrCodeUrl(qrCodeImageUrl);
       setSecretCode(secret);
+    }
+    if (!is2FACompleted) {
+      setShows2FAModal(false);
+      setShow2FAModal(true);
     } else {
       setShows2FAModal(true);
+      setShow2FAModal(false);
     }
   };
 
@@ -133,6 +139,7 @@ const SettingsScreen = () => {
       Alert.alert("Success", "2FA is disabled succesfully!");
       await disable2FA();
       setShows2FAModal(false);
+      setis2FACompleted(false);
     } else {
       Alert.alert("Error", "Failed to verfiy 2FA code.");
     }
@@ -143,6 +150,7 @@ const SettingsScreen = () => {
     if (data.success) {
       Alert.alert("Success", "2FA is verified successfully!");
       setShow2FAModal(false);
+      setis2FACompleted(true);
     } else {
       Alert.alert("Error", "Failed to verify 2FA code.");
     }
@@ -153,7 +161,7 @@ const SettingsScreen = () => {
       source={require("../assets/bg.jpg")}
       style={styles.backgroud}
     >
-      <ScrollView style={styles.container}>
+      <ScrollView contentContainerStyle={styles.container}>
         <TouchableOpacity
           style={styles.headerBox}
           onPress={() => navigation.goBack()}
@@ -198,9 +206,9 @@ const SettingsScreen = () => {
             <Text style={styles.switchText}>Two-Factor Authentication: </Text>
             <Switch
               trackColor={{ false: "#767577", true: "#81b0ff" }}
-              thumbColor={isEnabled2FA ? "green" : "#f4f3f4"}
+              thumbColor={is2FACompleted ? "green" : "#f4f3f4"}
               onValueChange={handle2FAToggle}
-              value={isEnabled2FA}
+              value={is2FACompleted}
             />
           </View>
           <Text style={styles.warningText}>
@@ -244,7 +252,10 @@ const SettingsScreen = () => {
             <BlurView style={styles.modalView} intensity={20} tint="dark">
               <TouchableOpacity
                 style={styles.closeButton}
-                onPress={() => setShow2FAModal(false)}
+                onPress={() => {
+                  setShow2FAModal(false);
+                  setis2FACompleted(false);
+                }}                
               >
                 <Ionicons name="close-circle" size={24} color="white" />
               </TouchableOpacity>
@@ -291,7 +302,7 @@ const SettingsScreen = () => {
                 style={styles.closeButton}
                 onPress={() => setShows2FAModal(false)}
               >
-                <Ionicons name="close-circle" size={24} color="black" />
+                <Ionicons name="close-circle" size={24} color="#fff" />
               </TouchableOpacity>
               <Text style={styles.modalText}>
                 Verify 2FA for disable 2FA protection.
@@ -321,23 +332,27 @@ const SettingsScreen = () => {
 const styles = StyleSheet.create({
   backgroud: {
     flex: 1,
-    resizeMode: "cover",
-    justifyContent: "center",
+    width: '100%',
+    height: '100%',
   },
   container: {
-    flex: 1,
+    flexGrow: 1,
+    justifyContent: 'flex-start',
+    marginTop: 50,
   },
   accordionHeader: {
-    flexDirection: "1",
+    flexDirection: "row",
+    gap: 5,
     alignItems: "center",
-    width: "100%",
-    alignSelf: "center",
+    justifyContent:'center',
+    paddingVertical: 10,
+    paddingHorizontal: 16,
   },
   headerBox: {
-    flex: 1,
     flexDirection: "row",
-    alignContent: "center",
+    alignItems: "center",
     padding: 15,
+    width: '100%', 
     gap: 15,
   },
   rowContainer: {

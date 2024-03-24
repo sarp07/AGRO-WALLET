@@ -39,22 +39,23 @@ const LoginWalletScreen = () => {
       );
       //navigation.navigate('Dashboard');
     } catch (error) {
-      Alert.alert("Login Failed", error.toString());
     }
   };
 
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
-      style={styles.container}
+      style={styles.background}
       keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
     >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <ImageBackground
           source={require("../assets/bg.jpg")}
-          style={styles.backgroud}
+          style={styles.container}
         >
-        <ScrollView style={styles.container2}>
+          <ScrollView
+            contentContainerStyle={styles.container2} // ScrollView için stil güncellemesi
+          >
             <View style={styles.innerContainer}>
               <Image
                 source={require("../assets/agro_whiteLogo.png")}
@@ -113,32 +114,22 @@ const LoginWalletScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  backgroud: {
+  background: {
     flex: 1,
-    resizeMode: "cover",
     justifyContent: "center",
   },
   container: {
     flex: 1,
-    padding: 0,
   },
   container2: {
-    padding: 0,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.3,
-    shadowRadius: 4.65,
-    elevation: 8,
+    flexGrow: 1,
+    justifyContent: "center",
+    top: 45,
   },
   innerContainer: {
-    flex: 1,
     alignItems: "center",
-    justifyContent: "center",
+    justifyContent: "flex-start",
     padding: 20,
-    marginVertical: 80,
   },
   title: {
     fontSize: 22,

@@ -43,9 +43,9 @@ const CreateWalletScreen = () => {
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <ImageBackground
           source={require("../assets/bg.jpg")}
-          style={styles.backgroud}
+          style={styles.background}
         >
-          <ScrollView>
+          <ScrollView contentContainerStyle={styles.scrollViewContainer}>
             <View style={styles.innerContainer}>
               <Image
                 source={require("../assets/agro_whiteLogo.png")}
@@ -113,20 +113,23 @@ const CreateWalletScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  backgroud: {
+  background: {
     flex: 1,
-    resizeMode: "cover",
-    justifyContent: "center",
   },
   container: {
     flex: 1,
   },
-  innerContainer: {
-    flex: 1,
-    alignItems: "center",
+  scrollViewContainer: {
+    flexGrow: 1,
     justifyContent: "center",
-    padding: 20,
   },
+  innerContainer: {
+    alignItems: "center",
+    justifyContent: "flex-start",
+    padding: 20,
+    top: 50,
+  },
+
   logo: {
     width: 180,
     height: 180,

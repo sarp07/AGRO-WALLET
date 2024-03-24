@@ -34,6 +34,13 @@ const Menu = ({ onItemSelected }) => (
       <Text style={styles.menuItemText}>Settings</Text>
     </TouchableOpacity>
     <TouchableOpacity
+      onPress={() => onItemSelected("Browser")}
+      style={styles.menuItem}
+    >
+      <Ionicons name="globe" size={24} color="lightgreen" />
+      <Text style={styles.menuItemText}>Browser</Text>
+    </TouchableOpacity>
+    <TouchableOpacity
       onPress={() => onItemSelected("Logout")}
       style={styles.menuItem}
     >
@@ -54,6 +61,7 @@ const DashboardScreen = () => {
     selectedNetwork,
     getTokenBalance,
     user,
+    getBalance,
   } = useContext(WalletContext);
   const navigation = useNavigation();
   const [selectedSection, setSelectedSection] = useState("Tokens");
@@ -64,26 +72,17 @@ const DashboardScreen = () => {
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
     
-    Promise.all([
-      listTransactions(),
-      Balance(),
-    ])
-    .then(() => {
-      console.log('Data refreshed');
-    })
-    .catch((error) => {
-      console.error("An error occurred during the refresh:", error);
-      Alert.alert("Refresh Error", "An error occurred during the refresh.");
-    })
+    listTransactions(),
+    getBalance(wallet.address, selectedNetwork)
     .finally(() => {
       setRefreshing(false);
     });
   
-  }, [Balance, listTransactions, ]);
+  }, [ listTransactions, getBalance ]);
   
 
   const handleMenuItemSelected = (selectedItem) => {
-    setIsOpen(false); // Menüyü kapat
+    setIsOpen(false); 
     if (selectedItem === "Logout") {
       logout();
       navigation.navigate("Home");
@@ -91,6 +90,8 @@ const DashboardScreen = () => {
       navigation.navigate("Settings");
     } else if (selectedItem === "Networks") {
       navigation.navigate("Networks");
+    } else if (selectedItem === "Browser") {
+      navigation.navigate("Browser");
     }
   };
 
@@ -323,9 +324,9 @@ const DashboardScreen = () => {
         style={styles.container}
       >
         <ScrollView
-          style={styles.glassmorphicContainer}
+          contentContainerStyle={styles.glassmorphicContainer}
           refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor='#fff' />
           }
         >
           <View style={styles.navbar}>
@@ -392,28 +393,18 @@ const DashboardScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    resizeMode: "cover",
-    justifyContent: "center",
-  },
-  glassmorphicContainer: {
     padding: 0,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.3,
-    shadowRadius: 4.65,
-    elevation: 8,
+    margin: 0
+  },
+  glassmorphicContainer: { 
+    justifyContent: 'center'
   },
   navbar: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    //backgroundColor: 'green',
-    paddingHorizontal: 20,
-    paddingTop: 20,
-    paddingBottom: 10,
+    padding: 30,
+    marginTop: 40,
   },
   title: {
     fontSize: 20,
@@ -437,7 +428,7 @@ const styles = StyleSheet.create({
   card: {
     borderRadius: 10,
     padding: 20,
-    margin: 15,
+    margin: 25,
   },
   cardTitle: {
     color: "#fff",
@@ -565,17 +556,18 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   menu: {
-    flex: 1,
-    width: 250,
-    backgroundColor: "green",
-    paddingTop: 20,
+    position: 'relative',
+    height: '1000%',
+    marginTop: 30,
+    backgroundColor: 'green'
   },
   menuItem: {
     flexDirection: "row",
     alignItems: "center",
     padding: 10,
     borderBottomWidth: 1,
-    borderBottomColor: "green",
+    marginTop: 10,
+    borderBottomColor: "lightgreen",
   },
   menuItemText: {
     marginLeft: 20,

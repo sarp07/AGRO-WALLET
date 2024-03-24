@@ -607,6 +607,7 @@ const listCustomNetworks = async () => {
         disable2FA,
         verify2FA,
         deploy2FA,
+        getBalance,
         isEnabled2FA,
         setIsEnabled2FA,
         listCustomNetworks,

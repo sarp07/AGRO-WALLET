@@ -80,7 +80,7 @@ const NetworkSelectionScreen = () => {
       source={require("../assets/bg.jpg")}
       style={styles.container}
     >
-      <ScrollView style={styles.glassmorphicContainer}>
+      <ScrollView contentContainerStyle={styles.glassmorphicContainer}>
         <TouchableOpacity
           style={styles.headerBox}
           onPress={() => navigation.goBack()}
@@ -224,22 +224,12 @@ const NetworkSelectionScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    resizeMode: "cover",
-    justifyContent: "center",
   },
   glassmorphicContainer: {
-    padding: 0,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.3,
-    shadowRadius: 4.65,
-    elevation: 8,
+    flex: 1,
+    marginTop: 50,
   },
   headerBox: {
-    flex: 1,
     flexDirection: "row",
     alignContent: "center",
     padding: 15,
