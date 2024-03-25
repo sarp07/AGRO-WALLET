@@ -226,7 +226,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   glassmorphicContainer: {
-    flex: 1,
+    flexGrow: 1,
     marginTop: 50,
   },
   headerBox: {
@@ -328,7 +328,6 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     color: "#fff",
     fontWeight: "bold",
-    fontSize: "20",
   },
 });
 

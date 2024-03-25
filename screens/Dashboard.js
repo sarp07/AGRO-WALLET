@@ -186,25 +186,43 @@ const DashboardScreen = () => {
   );
 
   const NFTsSection = () => {
-    const navigateToNFTImport = () => {
-      navigation.navigate("AddNFT");
+    const { listNFTs, selectedNetwork } = useContext(WalletContext);
+    const [nfts, setNfts] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
+  
+    const fetchNFTs = async () => {
+      setIsLoading(true);
+      const listedNFTs = await listNFTs();
+      const nftsMeta = await Promise.all(
+        listedNFTs.map(async (nft) => {
+          const metaResponse = await fetch(nft.tokenURI);
+          const metaData = await metaResponse.json();
+          return { ...nft, image: metaData.image };
+        })
+      );
+      setNfts(nftsMeta);
+      setIsLoading(false);
     };
+  
+    useEffect(() => {
+      fetchNFTs();
+    }, [selectedNetwork]);
+  
+    if (isLoading) {
+      return <Text style={styles.notFound}>NFTs loading...</Text>;
+    }
+  
     return (
       <BlurView tint="dark" intensity="20" style={styles.section}>
-        {tokens && tokens.length > 0 ? (
-          tokens.map((token, index) => {
-            if (token.network === selectedNetwork) {
-              return (
-                <View key={index} style={styles.tokenItem}>
-                  <Image style={styles.tokenImg} src={token.tokenImage}></Image>
-                  <Text style={styles.tokenText}>
-                    {token.tokenName} ({token.tokenSymbol})
-                  </Text>
-                </View>
-              );
-            }
-            return null;
-          })
+        {nfts && nfts.length > 0 ? (
+          nfts.map((nft, index) => (
+            <View key={index} style={styles.tokenItem}>
+              <Image style={styles.tokenImg} source={{ uri: nft.image }} />
+              <Text style={styles.tokenText}>
+                {nft.tokenName} ({nft.tokenSymbol})
+              </Text>
+            </View>
+          ))
         ) : (
           <View>
             <Text style={styles.notFound}>No NFTs found.</Text>
@@ -212,14 +230,14 @@ const DashboardScreen = () => {
         )}
         <TouchableOpacity
           style={styles.importButton}
-          onPress={navigateToNFTImport}
+          onPress={() => navigation.navigate("AddNFT")}
         >
           <Text style={styles.importButtonText}>Import a NFT</Text>
         </TouchableOpacity>
       </BlurView>
     );
   };
-
+  
   const TokensSection = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [tokenData, setTokenData] = useState([]);

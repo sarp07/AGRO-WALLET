@@ -16,6 +16,7 @@ import Import from "./screens/Import";
 import SendToken from "./screens/SendToken";
 import Verify2FA from "./screens/Verify2FA";
 import Browser from "./screens/Browser";
+import AddNFT from "./screens/AddNFT";
 
 const Stack = createNativeStackNavigator();
 
@@ -42,6 +43,7 @@ export default function App() {
           <Stack.Screen name="Settings" component={Settings} />
           <Stack.Screen name="Verify2FA" component={Verify2FA} />
           <Stack.Screen name="Browser" component={Browser} />
+          <Stack.Screen name="AddNFT" component={AddNFT} />
         </Stack.Navigator>
       </WalletProvider>
     </NavigationContainer>

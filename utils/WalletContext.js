@@ -47,7 +47,7 @@ export const WalletProvider = ({ children }) => {
 
   const changePassword = async (currentPassword, newPassword) => {
     const token = user.token;
-    
+
     try {
       const response = await fetch(`${BASE_URL}/change-password`, {
         method: "POST",
@@ -60,12 +60,12 @@ export const WalletProvider = ({ children }) => {
           newPassword,
         }),
       });
-  
+
       const data = await response.text();
       if (!response.ok) {
         throw new Error(data || "Password change failed");
       }
-  
+
       Alert.alert("Success", "Password successfully changed");
     } catch (error) {
       console.error("Error changing password:", error);
@@ -168,49 +168,48 @@ export const WalletProvider = ({ children }) => {
     }
   };
 
-
-const addCustomNetwork = async (networkData) => {
-  const token = user.token;
-  try {
-    const response = await fetch(`${BASE_URL}/add-custom-network`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ ...networkData, token }),
-    });
-    const data = await response.json();
-    if (!response.ok) {
-      throw new Error(data.error || 'Custom network could not be added');
+  const addCustomNetwork = async (networkData) => {
+    const token = user.token;
+    try {
+      const response = await fetch(`${BASE_URL}/add-custom-network`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ ...networkData, token }),
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error || "Custom network could not be added");
+      }
+      alert("Custom network added successfully!");
+    } catch (error) {
+      console.error(error);
+      alert("Failed to add custom network");
     }
-    alert('Custom network added successfully!');
-  } catch (error) {
-    console.error(error);
-    alert('Failed to add custom network');
-  }
-};
+  };
 
-const listCustomNetworks = async () => {
-  const token = user.token;
-  try {
-    const response = await fetch(`${BASE_URL}/select-custom-network`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ token }),
-    });
-    const data = await response.json();
-    if (!response.ok) {
-      throw new Error(data.error || 'Failed to fetch custom networks');
+  const listCustomNetworks = async () => {
+    const token = user.token;
+    try {
+      const response = await fetch(`${BASE_URL}/select-custom-network`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ token }),
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to fetch custom networks");
+      }
+      return data.customNetworks;
+    } catch (error) {
+      console.error(error);
+      alert("Failed to fetch custom networks");
+      return [];
     }
-    return data.customNetworks;
-  } catch (error) {
-    console.error(error);
-    alert('Failed to fetch custom networks');
-    return [];
-  }
-};
+  };
 
   const sendTransaction = async (toAddress, amount) => {
     try {
@@ -423,9 +422,9 @@ const listCustomNetworks = async () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ "networkName": selectedNetwork }),
+        body: JSON.stringify({ networkName: selectedNetwork }),
       });
-  
+
       if (!response.ok) {
         const errorText = await response.text();
         console.error("Sunucu hatası:", errorText);
@@ -433,14 +432,14 @@ const listCustomNetworks = async () => {
       } else {
         console.log(data);
       }
-  
+
       const data = await response.json();
       return data;
     } catch (error) {
       console.error("İstek hatası:", error);
       throw error;
     }
-  };  
+  };
 
   const getTokenBalance = async (networkName, tokenAddress, walletAddress) => {
     try {
@@ -488,6 +487,86 @@ const listCustomNetworks = async () => {
     } catch (error) {
       console.error("Error sending ERC20 Token:", error);
       Alert.alert("Error", error.toString());
+    }
+  };
+
+  const addNFT = async (contract, tokenId) => {
+    const token = user.token;
+    if (!token) {
+      console.error("Token bulunamadı.");
+      return;
+    }
+
+    try {
+      const response = await fetch(`${BASE_URL}/add-nft`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token, contract, tokenId, selectedNetwork }),
+      });
+
+      const data = await response.json();
+      if (!response.ok)
+        throw new Error(data.error || "Opps! Something went wrong.");
+
+      Alert.alert("Success", "NFT added succesfully.");
+    } catch (error) {
+      console.error(error);
+      Alert.alert("Hata", error.toString());
+    }
+  };
+
+  const listNFTs = async () => {
+    const token = user.token;
+    if (!token) {
+      console.error("Not found User Token.");
+      return;
+    }
+
+    try {
+      const response = await fetch(`${BASE_URL}/list-nfts`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userToken: token }),
+      });
+
+      const data = await response.json();
+      if (!response.ok)
+        throw new Error(data.error || "Opps! Something went wrong.");
+
+      return data.nfts; 
+    } catch (error) {
+      console.error(error);
+      Alert.alert("Hata", error.toString());
+    }
+  };
+
+  const sendNFT = async (toAddress, contractAddress, tokenId) => {
+    const token = user.token;
+    if (!token) {
+      console.error("Token bulunamadı.");
+      return;
+    }
+
+    try {
+      const response = await fetch(`${BASE_URL}/send-nft`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userToken: token,
+          toAddress,
+          contractAddress,
+          tokenId,
+        }),
+      });
+
+      const data = await response.json();
+      if (!response.ok)
+        throw new Error(data.error || "Opps! Something went wrong.");
+
+      Alert.alert("Succes", "NFT sended succesfully.");
+    } catch (error) {
+      console.error(error);
+      Alert.alert("Hata", error.toString());
     }
   };
 
@@ -612,6 +691,9 @@ const listCustomNetworks = async () => {
         setIsEnabled2FA,
         listCustomNetworks,
         addCustomNetwork,
+        listNFTs,
+        addNFT,
+        sendNFT,
       }}
     >
       {children}
