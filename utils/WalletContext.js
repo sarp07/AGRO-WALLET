@@ -497,22 +497,21 @@ export const WalletProvider = ({ children }) => {
       return;
     }
 
-    try {
-      const response = await fetch(`${BASE_URL}/add-nft`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token, contract, tokenId, selectedNetwork }),
-      });
-
+    const response = await fetch(`${BASE_URL}/add-nft`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ token: token, contract, tokenId, networkName: selectedNetwork }),
+    });
+    
+    if (response.ok) {
       const data = await response.json();
-      if (!response.ok)
-        throw new Error(data.error || "Opps! Something went wrong.");
-
-      Alert.alert("Success", "NFT added succesfully.");
-    } catch (error) {
-      console.error(error);
-      Alert.alert("Hata", error.toString());
+      Alert.alert("Success", "NFT added successfully.");
+    } else {
+      const errorText = await response.text();
+      console.error("Error Response:", errorText);
+      Alert.alert("Error", errorText);
     }
+    
   };
 
   const listNFTs = async () => {

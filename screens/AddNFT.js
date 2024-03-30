@@ -5,18 +5,16 @@ import { useNavigation } from "@react-navigation/native";
 import { AntDesign } from "@expo/vector-icons";
 
 const AddNFTScreen = () => {
-  const { addNFT } = useContext(WalletContext); // WalletContext'ten addNFT fonksiyonunu kullanacağız.
+  const { addNFT } = useContext(WalletContext); 
   const [nftAddress, setNftAddress] = useState("");
-  const [nftName, setNftName] = useState("");
-  const [nftSymbol, setNftSymbol] = useState("");
-  const [nftDescription, setNftDescription] = useState(""); // NFT açıklaması için yeni bir state ekledik.
+  const [tokenID, setTokenID] = useState("");
   const navigation = useNavigation();
 
   const handleAddNFT = async () => {
     try {
-      await addNFT(nftAddress, nftName, nftSymbol, nftDescription); // addNFT fonksiyonunu çağırıyoruz.
+      await addNFT(nftAddress, tokenID); 
       Alert.alert("Success", "NFT has been added successfully!");
-      navigation.navigate("Home");
+      navigation.navigate("Dashboard");
     } catch (error) {
       Alert.alert("Error", error.message);
     }
@@ -30,7 +28,7 @@ const AddNFTScreen = () => {
           <Text style={styles.header}>Add NFT</Text>
         </TouchableOpacity>
         <TextInput style={styles.input} placeholder="NFT Address" placeholderTextColor="#fff" value={nftAddress} onChangeText={setNftAddress} />
-        <TextInput style={styles.input} placeholder="NFT TokenID" placeholderTextColor="#fff" value={nftName} onChangeText={setNftName} />
+        <TextInput style={styles.input} placeholder="NFT TokenID" placeholderTextColor="#fff" value={tokenID} onChangeText={setTokenID} />
         <TouchableOpacity style={styles.button} onPress={handleAddNFT}>
           <Text style={styles.buttonText}>Add NFT</Text>
         </TouchableOpacity>

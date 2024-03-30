@@ -71,18 +71,15 @@ const DashboardScreen = () => {
 
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
-    
+
     listTransactions(),
-    getBalance(wallet.address, selectedNetwork)
-    .finally(() => {
-      setRefreshing(false);
-    });
-  
-  }, [ listTransactions, getBalance ]);
-  
+      getBalance(wallet.address, selectedNetwork).finally(() => {
+        setRefreshing(false);
+      });
+  }, [listTransactions, getBalance]);
 
   const handleMenuItemSelected = (selectedItem) => {
-    setIsOpen(false); 
+    setIsOpen(false);
     if (selectedItem === "Logout") {
       logout();
       navigation.navigate("Home");
@@ -189,29 +186,39 @@ const DashboardScreen = () => {
     const { listNFTs, selectedNetwork } = useContext(WalletContext);
     const [nfts, setNfts] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
-  
+
     const fetchNFTs = async () => {
       setIsLoading(true);
-      const listedNFTs = await listNFTs();
-      const nftsMeta = await Promise.all(
-        listedNFTs.map(async (nft) => {
-          const metaResponse = await fetch(nft.tokenURI);
-          const metaData = await metaResponse.json();
-          return { ...nft, image: metaData.image };
-        })
-      );
-      setNfts(nftsMeta);
+      try {
+        const listedNFTs = await listNFTs();
+        const nftsMeta = await Promise.all(
+          listedNFTs.map(async (nft) => {
+            const ipfsGateway = "https://ipfs.io/ipfs/";
+            const ipfsPath = nft.tokenURI.split("ipfs://")[1];
+            const metaResponse = await fetch(`${ipfsGateway}${ipfsPath}`);
+            const metaData = await metaResponse.json();
+            const imageUrl = metaData.image.includes("ipfs://")
+              ? `${ipfsGateway}${metaData.image.split("ipfs://")[1]}`
+              : metaData.image;
+            return { ...nft, image: imageUrl };
+          })
+        );
+        setNfts(nftsMeta);
+      } catch (error) {
+        console.error("Error fetching NFTs: ", error);
+        Alert.alert("Error", "Failed to fetch NFTs");
+      }
       setIsLoading(false);
     };
-  
+
     useEffect(() => {
       fetchNFTs();
     }, [selectedNetwork]);
-  
+
     if (isLoading) {
       return <Text style={styles.notFound}>NFTs loading...</Text>;
     }
-  
+
     return (
       <BlurView tint="dark" intensity="20" style={styles.section}>
         {nfts && nfts.length > 0 ? (
@@ -237,7 +244,7 @@ const DashboardScreen = () => {
       </BlurView>
     );
   };
-  
+
   const TokensSection = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [tokenData, setTokenData] = useState([]);
@@ -344,7 +351,11 @@ const DashboardScreen = () => {
         <ScrollView
           contentContainerStyle={styles.glassmorphicContainer}
           refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor='#fff' />
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              tintColor="#fff"
+            />
           }
         >
           <View style={styles.navbar}>
@@ -368,10 +379,13 @@ const DashboardScreen = () => {
                 <Ionicons name="copy-outline" size={24} color="gray" />
               </TouchableOpacity>
             </View>
-            <View style={styles.ChainContainer}>
-              <Text style={styles.chain}>Active Chain:</Text>
-              <Text style={styles.networkText}>{selectedNetwork}</Text>
-            </View>
+
+            <TouchableOpacity onPress={() => navigation.navigate("Networks")}>
+              <View style={styles.ChainContainer}>
+                <Text style={styles.chain}>Active Chain:</Text>
+                <Text style={styles.networkText}>{selectedNetwork}</Text>
+              </View>
+            </TouchableOpacity>
           </BlurView>
 
           <BlurView tint="dark" intensity="20" style={styles.card}>
@@ -412,10 +426,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 0,
-    margin: 0
+    margin: 0,
   },
-  glassmorphicContainer: { 
-    justifyContent: 'center'
+  glassmorphicContainer: {
+    justifyContent: "center",
   },
   navbar: {
     flexDirection: "row",
@@ -574,10 +588,10 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   menu: {
-    position: 'relative',
-    height: '1000%',
+    position: "relative",
+    height: "1000%",
     marginTop: 30,
-    backgroundColor: 'green'
+    backgroundColor: "green",
   },
   menuItem: {
     flexDirection: "row",
