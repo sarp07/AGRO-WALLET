@@ -13,7 +13,6 @@ const AddNFTScreen = () => {
   const handleAddNFT = async () => {
     try {
       await addNFT(nftAddress, tokenID); 
-      Alert.alert("Success", "NFT has been added successfully!");
       navigation.navigate("Dashboard");
     } catch (error) {
       Alert.alert("Error", error.message);
